@@ -56,7 +56,7 @@ export function LoginForm({
 
                             <FieldDescription className='text-center'>
                                 Don&apos;t have an account?{' '}
-                                <a href='#'>Sign up</a>
+                                <a href='/signup'>Sign up</a>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
