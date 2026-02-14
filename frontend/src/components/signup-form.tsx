@@ -8,17 +8,33 @@ import {
     FieldLabel,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
 import chatting from '@/assets/chatting.svg';
+import FormErrorLabel from './ui/form-error';
+import type { SignUpFormValues } from '@/types/form';
 
 export function SignupForm({
     className,
     ...props
 }: React.ComponentProps<'div'>) {
+    const {
+        register,
+        handleSubmit,
+        getValues,
+        formState: { errors },
+    } = useForm<SignUpFormValues>();
+
+    const onSubmit = () => {
+        console.log('XD2');
+    };
+
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
             <Card className='overflow-hidden p-0'>
                 <CardContent className='grid p-0 md:grid-cols-2'>
-                    <form className='p-6 md:p-8'>
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className='p-6 md:p-8'>
                         <FieldGroup>
                             <div className='flex flex-col items-center gap-2 text-center'>
                                 <h1 className='text-2xl font-bold'>
@@ -30,17 +46,72 @@ export function SignupForm({
                                 </p>
                             </div>
                             <Field>
+                                <Field className='grid grid-cols-2 gap-4'>
+                                    <Field>
+                                        <FieldLabel htmlFor='firstName'>
+                                            First Name
+                                        </FieldLabel>
+                                        <Input
+                                            id='firstName'
+                                            type='text'
+                                            {...register('firstName', {
+                                                required:
+                                                    'This field is required',
+                                            })}
+                                            className={`${
+                                                errors.firstName?.message
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }`}
+                                        />
+                                        <FormErrorLabel
+                                            error={errors.firstName?.message}
+                                        />
+                                    </Field>
+                                    <Field>
+                                        <FieldLabel htmlFor='lastName'>
+                                            Last Name
+                                        </FieldLabel>
+                                        <Input
+                                            id='lastName'
+                                            type='text'
+                                            {...register('lastName', {
+                                                required:
+                                                    'This field is required',
+                                            })}
+                                            className={`${
+                                                errors.lastName?.message
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }`}
+                                        />
+                                        <FormErrorLabel
+                                            error={errors.lastName?.message}
+                                        />
+                                    </Field>
+                                </Field>
+                            </Field>
+                            <Field>
                                 <FieldLabel htmlFor='email'>Email</FieldLabel>
                                 <Input
                                     id='email'
                                     type='email'
                                     placeholder='m@example.com'
-                                    required
+                                    {...register('email', {
+                                        required: 'This field is required',
+                                        pattern: {
+                                            value: /\S+@\S+\.\S+/,
+                                            message:
+                                                'Please provide a valid email address',
+                                        },
+                                    })}
+                                    className={`${
+                                        errors.email?.message
+                                            ? 'border-red-500'
+                                            : ''
+                                    }`}
                                 />
-                                <FieldDescription>
-                                    We&apos;ll use this to contact you. We will
-                                    not share your email with anyone else.
-                                </FieldDescription>
+                                <FormErrorLabel error={errors.email?.message} />
                             </Field>
                             <Field>
                                 <Field className='grid grid-cols-2 gap-4'>
@@ -51,17 +122,50 @@ export function SignupForm({
                                         <Input
                                             id='password'
                                             type='password'
-                                            required
+                                            {...register('password', {
+                                                required:
+                                                    'This field is required',
+                                                minLength: {
+                                                    value: 8,
+                                                    message:
+                                                        'Password needs a minimum of 8 characters',
+                                                },
+                                            })}
+                                            className={`${
+                                                errors.password?.message
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }`}
+                                        />
+                                        <FormErrorLabel
+                                            error={errors.password?.message}
                                         />
                                     </Field>
                                     <Field>
-                                        <FieldLabel htmlFor='confirm-password'>
+                                        <FieldLabel htmlFor='confirmPassword'>
                                             Confirm Password
                                         </FieldLabel>
                                         <Input
-                                            id='confirm-password'
+                                            id='confirmPassword'
                                             type='password'
-                                            required
+                                            {...register('confirmPassword', {
+                                                required:
+                                                    'This field is required',
+                                                validate: (value) =>
+                                                    value ===
+                                                        getValues().password ||
+                                                    'Passwords need to match',
+                                            })}
+                                            className={`${
+                                                errors.confirmPassword?.message
+                                                    ? 'border-red-500'
+                                                    : ''
+                                            }`}
+                                        />
+                                        <FormErrorLabel
+                                            error={
+                                                errors.confirmPassword?.message
+                                            }
                                         />
                                     </Field>
                                 </Field>
