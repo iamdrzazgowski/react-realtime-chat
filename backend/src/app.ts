@@ -1,11 +1,10 @@
 import express from "express";
 import cors from "cors";
+import authRoutes from "./modules/auth/auth.routes";
 
 export const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/", (req, res) => {
-    res.json({ message: "Działa 🚀 XD" });
-});
+app.use("/api/auth", authRoutes);
