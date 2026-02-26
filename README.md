@@ -32,13 +32,13 @@ MVP aplikacji typu chat messenger z obsługą rozmów 1-1 i grupowych, wiadomoś
   - ConversationMember [ ]
   - Message [ ]
 - Określenie relacji między tabelami [ ]
-- Konfiguracja projektu backendowego [ ]
-- Połączenie z PostgreSQL [ ]
+- Konfiguracja projektu backendowego [X]
+- Połączenie z PostgreSQL [X]
 
 ### Frontend
-- Inicjalizacja projektu (React + Vite) [ ]
-- Konfiguracja Tailwind CSS [ ]
-- Podstawowa struktura folderów [ ]
+- Inicjalizacja projektu (React + Vite) [X]
+- Konfiguracja Tailwind CSS [X]
+- Podstawowa struktura folderów [X]
 - Layout aplikacji:
   - Sidebar (lista rozmów) [ ]
   - Main chat area [ ]
@@ -48,18 +48,18 @@ MVP aplikacji typu chat messenger z obsługą rozmów 1-1 i grupowych, wiadomoś
 ## **Dzień 2 – Autoryzacja i użytkownicy**
 
 ### Backend
-- Rejestracja użytkownika [ ]
-- Logowanie użytkownika [ ]
-- Generowanie JWT [ ]
-- Middleware autoryzacji [ ]
+- Rejestracja użytkownika [X]
+- Logowanie użytkownika [X]
+- Generowanie JWT [X]
+- Middleware autoryzacji [X]
 - Endpoint:
-  - `GET /me` [ ]
+  - `GET /user` [X]
 
 ### Frontend
-- Widoki logowania i rejestracji [ ]
-- Obsługa sesji użytkownika [ ]
-- Ochrona tras (private routes) [ ]
-- Pobranie danych zalogowanego użytkownika [ ]
+- Widoki logowania i rejestracji [X]
+- Obsługa sesji użytkownika [X]
+- Ochrona tras (private routes) [X]
+- Pobranie danych zalogowanego użytkownika [X]
 
 ---
 
