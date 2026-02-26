@@ -12,6 +12,7 @@ import chatting from '@/assets/chatting.svg';
 import { useForm } from 'react-hook-form';
 import FormErrorLabel from './ui/form-error';
 import type { LoginFormValues } from '@/types/form';
+import { useLogin } from '@/hooks/useAuth';
 
 export function LoginForm({
     className,
@@ -21,10 +22,13 @@ export function LoginForm({
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm<LoginFormValues>();
 
-    const onSubmit = () => {
-        console.log('XD');
+    const { loginUser, isLoading } = useLogin();
+
+    const onSubmit = ({ email, password }: LoginFormValues) => {
+        loginUser({ email, password }, { onSettled: () => reset() });
     };
 
     return (
@@ -88,7 +92,9 @@ export function LoginForm({
                                 />
                             </Field>
                             <Field>
-                                <Button type='submit'>Login</Button>
+                                <Button type='submit' disabled={isLoading}>
+                                    Login
+                                </Button>
                             </Field>
 
                             <FieldDescription className='text-center'>

@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import chatting from '@/assets/chatting.svg';
 import FormErrorLabel from './ui/form-error';
 import type { SignUpFormValues } from '@/types/form';
+import { useRegisterUser } from '@/hooks/useAuth';
 
 export function SignupForm({
     className,
@@ -22,10 +23,27 @@ export function SignupForm({
         handleSubmit,
         getValues,
         formState: { errors },
+        reset,
     } = useForm<SignUpFormValues>();
+    const { registerUser, isLoading } = useRegisterUser();
 
-    const onSubmit = () => {
-        console.log('XD2');
+    const onSubmit = ({
+        firstName,
+        lastName,
+        email,
+        password,
+        confirmPassword,
+    }: SignUpFormValues) => {
+        registerUser(
+            {
+                firstName,
+                lastName,
+                email,
+                password,
+                confirmPassword,
+            },
+            { onSettled: () => reset() },
+        );
     };
 
     return (
@@ -174,7 +192,9 @@ export function SignupForm({
                                 </FieldDescription>
                             </Field>
                             <Field>
-                                <Button type='submit'>Create Account</Button>
+                                <Button type='submit' disabled={isLoading}>
+                                    Create Account
+                                </Button>
                             </Field>
                             <FieldDescription className='text-center'>
                                 Already have an account?{' '}
