@@ -27,11 +27,11 @@ MVP aplikacji typu chat messenger z obsługą rozmów 1-1 i grupowych, wiadomoś
 
 ### Backend
 - Zaplanowanie modeli danych:
-  - User [ ]
-  - Conversation (1-1 / GROUP) [ ]
-  - ConversationMember [ ]
-  - Message [ ]
-- Określenie relacji między tabelami [ ]
+  - User [X]
+  - Conversation (1-1 / GROUP) [X]
+  - ConversationMember [X]
+  - Message [X]
+- Określenie relacji między tabelami [X]
 - Konfiguracja projektu backendowego [X]
 - Połączenie z PostgreSQL [X]
 
@@ -40,8 +40,8 @@ MVP aplikacji typu chat messenger z obsługą rozmów 1-1 i grupowych, wiadomoś
 - Konfiguracja Tailwind CSS [X]
 - Podstawowa struktura folderów [X]
 - Layout aplikacji:
-  - Sidebar (lista rozmów) [ ]
-  - Main chat area [ ]
+  - Sidebar (lista rozmów) [X]
+  - Main chat area [X]
 
 ---
 
