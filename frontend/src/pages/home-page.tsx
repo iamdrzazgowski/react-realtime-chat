@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ProfileSheet } from '@/components/profile-sheet';
 import { useUser } from '@/hooks/useAuth';
+import { Outlet } from 'react-router';
 
 export default function HomePage() {
     const [activeId, setActiveId] = useState<string | null>('c1');
@@ -33,7 +34,7 @@ export default function HomePage() {
                 {/* Sidebar - conversation list */}
                 <div
                     className={cn(
-                        'w-full md:w-80 lg:w-96 flex-shrink-0 transition-transform duration-200',
+                        'w-full md:w-80 lg:w-96 shrink-0 transition-transform duration-200',
                         mobileShowChat
                             ? '-translate-x-full md:translate-x-0'
                             : 'translate-x-0',
@@ -57,7 +58,7 @@ export default function HomePage() {
                             ? 'translate-x-0'
                             : 'translate-x-full md:translate-x-0',
                     )}>
-                    CHAT AREA
+                    <Outlet />
                 </div>
             </main>
 
