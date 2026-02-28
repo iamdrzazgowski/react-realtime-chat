@@ -8,10 +8,10 @@ import {
     SheetDescription,
 } from './ui/sheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { Badge } from './ui/badge';
-import { Bell, Moon, LogOut } from 'lucide-react';
+import { Bell, Moon } from 'lucide-react';
+import LogoutBtn from './ui/logout-btn';
 
 interface ProfileSheetProps {
     open: boolean;
@@ -61,7 +61,6 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
 
                     <Separator />
 
-                    {/* Settings list */}
                     <div className='flex-1 overflow-y-auto px-2 py-2'>
                         <nav className='flex flex-col gap-0.5'>
                             <SettingsItem
@@ -80,12 +79,7 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
                     <Separator />
 
                     <div className='p-3'>
-                        <Button
-                            variant='ghost'
-                            className='w-full justify-start gap-2.5 h-10 text-destructive hover:text-destructive hover:bg-destructive/10 text-sm font-normal'>
-                            <LogOut className='h-4 w-4' />
-                            Wyloguj sie
-                        </Button>
+                        <LogoutBtn />
                     </div>
                 </div>
             </SheetContent>

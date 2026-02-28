@@ -7,7 +7,7 @@ import { useUser } from '@/hooks/useAuth';
 import { Outlet } from 'react-router';
 
 export default function HomePage() {
-    const [activeId, setActiveId] = useState<string | null>('c1');
+    const [activeId, setActiveId] = useState<string | null>(null);
     const [mobileShowChat, setMobileShowChat] = useState(false);
     const { user } = useUser();
 
