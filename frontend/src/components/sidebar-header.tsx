@@ -5,14 +5,9 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { MessageSquarePlus, UserPlus, Users } from 'lucide-react';
+import { MessageSquarePlus, Users } from 'lucide-react';
 
 const ACTIONS = [
-    {
-        icon: UserPlus,
-        label: 'Dodaj znajomego',
-        onClick: (handlers) => handlers.onAddFriend(),
-    },
     {
         icon: Users,
         label: 'Utwórz grupę',
@@ -21,17 +16,17 @@ const ACTIONS = [
     {
         icon: MessageSquarePlus,
         label: 'Nowa konwersacja',
-        onClick: () => {},
+        onClick: (handlers) => handlers.onCreateDirectConversation(),
     },
 ];
 
 export function SidebarHeader({
-    onAddFriend,
     onCreateGroup,
     onOpenProfile,
+    onCreateDirectConversation,
     user,
 }) {
-    const handlers = { onAddFriend, onCreateGroup };
+    const handlers = { onCreateDirectConversation, onCreateGroup };
 
     return (
         <div className='flex items-center justify-between border-b border-border px-4 py-4'>

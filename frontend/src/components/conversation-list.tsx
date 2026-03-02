@@ -10,7 +10,7 @@ export function ConversationList({
     conversations,
     activeId,
     onSelect,
-    onAddFriend,
+    onCreateDirectConversation,
     onCreateGroup,
     onOpenProfile,
     user,
@@ -38,7 +38,7 @@ export function ConversationList({
         <TooltipProvider>
             <div className='flex h-full flex-col border-r border-border bg-card'>
                 <SidebarHeader
-                    onAddFriend={onAddFriend}
+                    onCreateDirectConversation={onCreateDirectConversation}
                     onCreateGroup={onCreateGroup}
                     onOpenProfile={onOpenProfile}
                     user={user}

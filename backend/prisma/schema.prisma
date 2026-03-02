@@ -23,12 +23,6 @@ enum ConversationRole {
     MEMBER
 }
 
-enum FriendRequestStatus {
-    PENDING
-    ACCEPTED
-    REJECTED
-}
-
 model User {
     id        String @id @default(uuid())
     email     String @unique
@@ -43,9 +37,6 @@ model User {
 
     conversations ConversationMember[]
     messages      Message[]
-
-    sentFriendRequests     FriendRequest[] @relation("SentRequests")
-    receivedFriendRequests FriendRequest[] @relation("ReceivedRequests")
 
     @@index([email])
 }
@@ -93,23 +84,4 @@ model Message {
     sender       User         @relation(fields: [senderId], references: [id])
 
     @@index([conversationId, createdAt])
-}
-
-model FriendRequest {
-    id String @id @default(uuid())
-
-    senderId   String
-    receiverId String
-
-    status FriendRequestStatus @default(PENDING)
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    sender   User @relation("SentRequests", fields: [senderId], references: [id], onDelete: Cascade)
-    receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
-
-    @@unique([senderId, receiverId])
-    @@index([receiverId])
-    @@index([senderId])
 }

@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { ProfileSheet } from '@/components/profile-sheet';
 import { useUser } from '@/hooks/useAuth';
 import { Outlet } from 'react-router';
+import { DirectConversationDialog } from '@/components/direct-conversation-dialog';
+import { CreateGroupDialog } from '@/components/create-group-dialog';
 
 export default function HomePage() {
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -12,7 +14,8 @@ export default function HomePage() {
     const { user } = useUser();
 
     // Dialog states
-    const [addFriendOpen, setAddFriendOpen] = useState(false);
+    const [createDirectConversation, setCreateDirectConversation] =
+        useState(false);
     const [createGroupOpen, setCreateGroupOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
@@ -43,7 +46,9 @@ export default function HomePage() {
                         conversations={conversations}
                         activeId={activeId}
                         onSelect={handleSelect}
-                        onAddFriend={() => setAddFriendOpen(true)}
+                        onCreateDirectConversation={() =>
+                            setCreateDirectConversation(true)
+                        }
                         onCreateGroup={() => setCreateGroupOpen(true)}
                         onOpenProfile={() => setProfileOpen(true)}
                         user={user}
@@ -61,6 +66,16 @@ export default function HomePage() {
                     <Outlet />
                 </div>
             </main>
+
+            <DirectConversationDialog
+                open={createDirectConversation}
+                onOpenChange={setCreateDirectConversation}
+                onCreateConversation={() => {}}
+            />
+            <CreateGroupDialog
+                open={createGroupOpen}
+                onOpenChange={setCreateGroupOpen}
+            />
 
             <ProfileSheet
                 open={profileOpen}
