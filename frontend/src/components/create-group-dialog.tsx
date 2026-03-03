@@ -15,6 +15,9 @@ import { Search, Users, X } from 'lucide-react';
 import { useState } from 'react';
 import { users } from '@/lib/chat-data';
 import { cn } from '@/lib/utils';
+import { useUsers } from '@/hooks/useUsers';
+import type { User } from './direct-conversation-dialog';
+import { Spinner } from './ui/spinner';
 
 interface CreateGroupDialogProps {
     open: boolean;
@@ -29,9 +32,10 @@ export function CreateGroupDialog({
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState<Set<string>>(new Set());
 
-    const filtered = users.filter((u) =>
-        u.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    const { isLoading, usersData } = useUsers({
+        search,
+        initialLimit: 5,
+    });
 
     const toggleUser = (id: string) => {
         setSelected((prev) => {
@@ -117,7 +121,9 @@ export function CreateGroupDialog({
 
                     <ScrollArea className='max-h-48'>
                         <div className='flex flex-col gap-0.5'>
-                            {filtered.map((user) => {
+                            {isLoading && <Spinner />}
+
+                            {(usersData?.usersData ?? []).map((user: User) => {
                                 const isSelected = selected.has(user.id);
                                 return (
                                     <button
@@ -139,22 +145,23 @@ export function CreateGroupDialog({
                                                             ? 'bg-primary text-primary-foreground'
                                                             : 'bg-muted text-muted-foreground',
                                                     )}>
-                                                    {user.avatar}
+                                                    {user.firstName[0]}
+                                                    {user.lastName[0]}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            {user.online && (
+                                            {/* {user.online && (
                                                 <span className='absolute bottom-0 right-0 h-2 w-2 rounded-full border border-card bg-online' />
-                                            )}
+                                            )} */}
                                         </div>
                                         <div className='flex-1'>
                                             <p className='text-sm font-medium text-foreground'>
-                                                {user.name}
+                                                {user.firstName} {user.lastName}
                                             </p>
-                                            <p className='text-xs text-muted-foreground'>
+                                            {/* <p className='text-xs text-muted-foreground'>
                                                 {user.online
                                                     ? 'online'
                                                     : 'offline'}
-                                            </p>
+                                            </p> */}
                                         </div>
                                         <div
                                             className={cn(

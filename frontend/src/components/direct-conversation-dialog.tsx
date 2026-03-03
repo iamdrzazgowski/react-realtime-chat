@@ -11,20 +11,22 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
-
-const users = [
-    { id: 'u1', name: 'Julia Mazur', avatar: 'JM' },
-    { id: 'u2', name: 'Jakub Krawczyk', avatar: 'JK' },
-    { id: 'u3', name: 'Natalia Szymczak', avatar: 'NS' },
-    { id: 'u4', name: 'Adam Wojcik', avatar: 'AW' },
-    { id: 'u5', name: 'Marta Duda', avatar: 'MD' },
-    { id: 'u6', name: 'Filip Borkowski', avatar: 'FB' },
-];
+import { useUsers } from '@/hooks/useUsers';
+import { Spinner } from './ui/spinner';
 
 interface DirectConversationDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onCreateConversation: (userId: string) => void;
+}
+
+export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    isOnline: boolean;
+    createdAt: Date;
 }
 
 export function DirectConversationDialog({
@@ -34,10 +36,10 @@ export function DirectConversationDialog({
 }: DirectConversationDialogProps) {
     const [search, setSearch] = useState('');
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
-
-    const filtered = users.filter((user) =>
-        user.name.toLowerCase().includes(search.toLowerCase()),
-    );
+    const { isLoading, usersData = [] } = useUsers({
+        search,
+        initialLimit: 5,
+    });
 
     const handleCreate = () => {
         if (!selectedUser) return;
@@ -69,7 +71,9 @@ export function DirectConversationDialog({
 
                 <ScrollArea className='max-h-64'>
                     <div className='flex flex-col gap-1'>
-                        {filtered.map((user) => {
+                        {isLoading && <Spinner />}
+
+                        {(usersData?.usersData ?? []).map((user: User) => {
                             const isSelected = selectedUser === user.id;
                             return (
                                 <button
@@ -82,17 +86,18 @@ export function DirectConversationDialog({
                                     }`}>
                                     <Avatar className='h-9 w-9'>
                                         <AvatarFallback className='bg-muted text-muted-foreground text-xs font-medium'>
-                                            {user.avatar}
+                                            {user.firstName[0]}
+                                            {user.lastName[0]}
                                         </AvatarFallback>
                                     </Avatar>
                                     <p className='text-sm font-medium text-foreground truncate'>
-                                        {user.name}
+                                        {user.firstName} {user.lastName}
                                     </p>
                                 </button>
                             );
                         })}
 
-                        {filtered.length === 0 && (
+                        {usersData.length === 0 && (
                             <div className='py-8 text-center'>
                                 <p className='text-sm text-muted-foreground'>
                                     Nie znaleziono użytkowników
