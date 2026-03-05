@@ -13,11 +13,11 @@ import { Search, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useUsers } from '@/hooks/useUsers';
 import { Spinner } from './ui/spinner';
+import { useCreateDirectConversation } from '@/hooks/useConversation';
 
 interface DirectConversationDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onCreateConversation: (userId: string) => void;
 }
 
 export interface User {
@@ -32,9 +32,10 @@ export interface User {
 export function DirectConversationDialog({
     open,
     onOpenChange,
-    onCreateConversation,
 }: DirectConversationDialogProps) {
     const [search, setSearch] = useState('');
+    const { createDirectConversation, isPending } =
+        useCreateDirectConversation();
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const { isLoading, usersData = [] } = useUsers({
         search,
@@ -43,7 +44,7 @@ export function DirectConversationDialog({
 
     const handleCreate = () => {
         if (!selectedUser) return;
-        onCreateConversation(selectedUser);
+        createDirectConversation(selectedUser);
         onOpenChange(false);
         setSelectedUser(null);
         setSearch('');
@@ -109,7 +110,7 @@ export function DirectConversationDialog({
 
                 <Button
                     onClick={handleCreate}
-                    disabled={!selectedUser}
+                    disabled={!selectedUser || isPending}
                     className='w-full mt-2 gap-2'>
                     <MessageCircle className='h-4 w-4' />
                     Rozpocznij rozmowę

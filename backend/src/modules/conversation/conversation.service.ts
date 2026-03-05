@@ -41,7 +41,10 @@ export const createDirectConversation = async (
         data: {
             type: "DIRECT",
             members: {
-                create: [{ userId }, { userId: otherUserId }],
+                create: [
+                    { userId, role: "MEMBER" },
+                    { userId: otherUserId, role: "MEMBER" },
+                ],
             },
         },
         include: {

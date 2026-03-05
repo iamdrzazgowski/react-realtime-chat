@@ -1,9 +1,17 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 interface FetchUsersParams {
     search?: string;
     limit?: number;
 }
 
 export const getUsers = async ({ search, limit }: FetchUsersParams) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        throw new Error('No token found!');
+    }
+
     const params = new URLSearchParams();
 
     if (search?.trim() === '') {
@@ -14,9 +22,9 @@ export const getUsers = async ({ search, limit }: FetchUsersParams) => {
         params.append('search', search);
     }
 
-    const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/users?${params.toString()}`,
-    );
+    const res = await fetch(`${API_URL}/api/users?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
 
     if (!res.ok) throw new Error('Failed to fetch users');
 

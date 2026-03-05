@@ -1,5 +1,7 @@
 import type { LoginFormValues, SignUpFormValues } from '@/types/form';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export const getUser = async () => {
     const token = localStorage.getItem('token');
 
@@ -7,7 +9,7 @@ export const getUser = async () => {
         throw new Error('No token found!');
     }
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
+    const res = await fetch(`${API_URL}/api/auth/user`, {
         headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -17,7 +19,7 @@ export const getUser = async () => {
 };
 
 export const loginUser = async (data: LoginFormValues) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -29,7 +31,7 @@ export const loginUser = async (data: LoginFormValues) => {
 };
 
 export const registerUser = async (data: SignUpFormValues) => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+    const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

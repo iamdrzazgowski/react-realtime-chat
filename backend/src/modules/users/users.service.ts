@@ -3,14 +3,19 @@ import { prisma } from "../../config/prisma";
 interface GetUsersParams {
     search?: string;
     limit?: number;
+    userId: string;
 }
 
-export const getUsers = async ({ search, limit }: GetUsersParams) => {
+export const getUsers = async ({ search, limit, userId }: GetUsersParams) => {
     const usersData = await prisma.user.findMany({
         ...(limit !== undefined && { take: limit }),
 
-        ...(search && {
-            where: {
+        where: {
+            id: {
+                not: userId,
+            },
+
+            ...(search && {
                 OR: [
                     {
                         firstName: {
@@ -31,8 +36,8 @@ export const getUsers = async ({ search, limit }: GetUsersParams) => {
                         },
                     },
                 ],
-            },
-        }),
+            }),
+        },
 
         orderBy: {
             createdAt: "desc",
