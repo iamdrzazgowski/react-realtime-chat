@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ScrollArea } from './ui/scroll-area';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { SidebarHeader } from './sidebar-header';
@@ -18,6 +18,23 @@ export function ConversationList({
     const [search, setSearch] = useState('');
     const { conversationsData } = useGetConversations();
 
+    const filteredConversations = useMemo(() => {
+        if (!conversationsData?.conversations) return [];
+
+        const lowerSearch = search.toLowerCase();
+
+        return conversationsData.conversations.filter((conv) => {
+            if (conv.type === 'DIRECT' && conv.user) {
+                const fullName =
+                    `${conv.user.firstName} ${conv.user.lastName}`.toLowerCase();
+                return fullName.includes(lowerSearch);
+            } else if (conv.type === 'GROUP') {
+                return (conv.name ?? '').toLowerCase().includes(lowerSearch);
+            }
+            return false;
+        });
+    }, [conversationsData, search]);
+
     const renderItem = (conversation) => (
         <ConversationItem
             key={conversation.id}
@@ -25,7 +42,6 @@ export function ConversationList({
             isActive={activeId === conversation.id}
             onSelect={onSelect}
             currentUserId={user.id}
-            // onDelete={() => deleteConversation(conversation.id)}
         />
     );
 
@@ -43,17 +59,15 @@ export function ConversationList({
 
                 <ScrollArea className='flex-1'>
                     <div className='flex flex-col'>
-                        {(conversationsData?.conversations ?? []).map(
-                            renderItem,
-                        )}
-
-                        {/* {filtered.length === 0 && (
+                        {filteredConversations.length > 0 ? (
+                            filteredConversations.map(renderItem)
+                        ) : (
                             <div className='py-12 text-center'>
                                 <p className='text-sm text-muted-foreground'>
                                     Brak wyników
                                 </p>
                             </div>
-                        )} */}
+                        )}
                     </div>
                 </ScrollArea>
             </div>
