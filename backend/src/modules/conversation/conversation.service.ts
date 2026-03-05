@@ -58,3 +58,77 @@ export const createDirectConversation = async (
 
     return conversation;
 };
+
+export const getUserConversations = async (userId: string) => {
+    const conversations = await prisma.conversation.findMany({
+        where: {
+            members: {
+                some: { userId },
+            },
+        },
+        include: {
+            members: {
+                include: { user: true },
+            },
+            messages: {
+                orderBy: { createdAt: "desc" },
+                take: 1,
+                include: {
+                    sender: {
+                        select: { id: true, firstName: true, lastName: true },
+                    },
+                },
+            },
+        },
+        orderBy: { updatedAt: "desc" },
+    });
+
+    return conversations.map((conv) => {
+        const lastMessage = conv.messages[0] || null;
+
+        if (conv.type === "DIRECT") {
+            const otherMember = conv.members.find((m) => m.userId !== userId);
+            return {
+                id: conv.id,
+                type: conv.type,
+                user: otherMember
+                    ? {
+                          id: otherMember.user.id,
+                          firstName: otherMember.user.firstName,
+                          lastName: otherMember.user.lastName,
+                      }
+                    : null,
+                lastMessage: lastMessage
+                    ? {
+                          id: lastMessage.id,
+                          content: lastMessage.content,
+                          createdAt: lastMessage.createdAt,
+                          sender: {
+                              id: lastMessage.sender.id,
+                              firstName: lastMessage.sender.firstName,
+                              lastName: lastMessage.sender.lastName,
+                          },
+                      }
+                    : null,
+            };
+        } else {
+            return {
+                id: conv.id,
+                type: conv.type,
+                name: conv.name,
+                lastMessage: lastMessage
+                    ? {
+                          id: lastMessage.id,
+                          content: lastMessage.content,
+                          createdAt: lastMessage.createdAt,
+                          sender: {
+                              id: lastMessage.sender.id,
+                              firstName: lastMessage.sender.firstName,
+                              lastName: lastMessage.sender.lastName,
+                          },
+                      }
+                    : null,
+            };
+        }
+    });
+};

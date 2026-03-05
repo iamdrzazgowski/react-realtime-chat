@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { AuthRequest } from "../auth/auth.middleware";
-import { createDirectConversation as createDirectConversationAPI } from "./conversation.service";
+import {
+    createDirectConversation as createDirectConversationAPI,
+    getUserConversations,
+} from "./conversation.service";
 
 export const createDirectConversation = async (
     req: AuthRequest,
@@ -24,6 +27,22 @@ export const createDirectConversation = async (
         );
 
         return res.status(201).json({ conversation });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const getConversations = async (req: AuthRequest, res: Response) => {
+    try {
+        const userId = req.userId;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        const conversations = await getUserConversations(userId);
+
+        return res.status(200).json({ conversations });
     } catch (error) {
         return res.status(500).json({ message: "Internal Server Error" });
     }

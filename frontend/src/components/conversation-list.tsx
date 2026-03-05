@@ -4,7 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { SidebarHeader } from './sidebar-header';
 import { ConversationSearch } from './conversation-search';
 import { ConversationItem } from './conversation-item';
-import { useConversationState } from '../hooks/useConversationState';
+import { useGetConversations } from '@/hooks/useConversation';
 
 export function ConversationList({
     conversations,
@@ -16,13 +16,7 @@ export function ConversationList({
     user,
 }) {
     const [search, setSearch] = useState('');
-    const { deletedIds, deleteConversation } = useConversationState();
-
-    const filtered = conversations
-        .filter((c) => !deletedIds.has(c.id))
-        .filter((c) =>
-            c.participants[0].name.toLowerCase().includes(search.toLowerCase()),
-        );
+    const { conversationsData } = useGetConversations();
 
     const renderItem = (conversation) => (
         <ConversationItem
@@ -30,7 +24,8 @@ export function ConversationList({
             conversation={conversation}
             isActive={activeId === conversation.id}
             onSelect={onSelect}
-            onDelete={() => deleteConversation(conversation.id)}
+            currentUserId={user.id}
+            // onDelete={() => deleteConversation(conversation.id)}
         />
     );
 
@@ -48,15 +43,17 @@ export function ConversationList({
 
                 <ScrollArea className='flex-1'>
                     <div className='flex flex-col'>
-                        {conversations.map(renderItem)}
+                        {(conversationsData?.conversations ?? []).map(
+                            renderItem,
+                        )}
 
-                        {filtered.length === 0 && (
+                        {/* {filtered.length === 0 && (
                             <div className='py-12 text-center'>
                                 <p className='text-sm text-muted-foreground'>
                                     Brak wyników
                                 </p>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </ScrollArea>
             </div>

@@ -19,6 +19,7 @@ export const useUser = () => {
         queryKey: ['user'],
         queryFn: () => getUser(),
         enabled: !!token,
+        staleTime: 1000 * 60,
     });
 
     return { isLoading, user, isError };

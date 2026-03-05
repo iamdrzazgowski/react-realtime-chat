@@ -7,11 +7,14 @@ export function ConversationItem({
     conversation,
     isActive,
     onSelect,
-    onDelete,
+    currentUserId,
 }) {
-    const participant = conversation.participants[0];
-    const lastMsg = conversation.lastMessage;
-    const unread = lastMsg.senderId !== 'me' && !lastMsg.read;
+    const participant = conversation.user ?? null;
+    const lastMsg = conversation.lastMessage ?? null;
+
+    const unread = lastMsg
+        ? lastMsg.senderId !== currentUserId && !lastMsg.read
+        : false;
 
     return (
         <div className='group relative'>
@@ -32,10 +35,11 @@ export function ConversationItem({
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-muted text-muted-foreground',
                             )}>
-                            {participant.avatar}
+                            {participant?.firstName?.[0]}
+                            {participant?.lastName?.[0]}
                         </AvatarFallback>
                     </Avatar>
-                    {participant.online && (
+                    {participant?.online && (
                         <span className='absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card bg-online' />
                     )}
                 </div>
@@ -51,17 +55,21 @@ export function ConversationItem({
                                         ? 'font-semibold text-foreground'
                                         : 'font-medium text-foreground',
                                 )}>
-                                {participant.name}
+                                {participant
+                                    ? `${participant.firstName} ${participant.lastName}`
+                                    : 'Unknown User'}
                             </span>
                         </div>
                         <span
                             className={cn(
-                                'text-[11px] flex-shrink-0 ml-2',
+                                'text-[11px] shrink-0 ml-2',
                                 unread
                                     ? 'text-primary font-medium'
                                     : 'text-muted-foreground',
                             )}>
-                            {formatRelativeTime(lastMsg.timestamp)}
+                            {lastMsg
+                                ? formatRelativeTime(lastMsg.timestamp)
+                                : ''}
                         </span>
                     </div>
                     <div className='flex items-center gap-1.5'>
@@ -72,8 +80,11 @@ export function ConversationItem({
                                     ? 'text-foreground font-medium'
                                     : 'text-muted-foreground',
                             )}>
-                            {lastMsg.senderId === 'me' ? 'Ty: ' : ''}
-                            {lastMsg.text}
+                            {lastMsg
+                                ? (lastMsg.senderId === currentUserId
+                                      ? 'Ty: '
+                                      : '') + lastMsg.text
+                                : 'No messages yet'}
                         </p>
                     </div>
                 </div>
@@ -81,10 +92,7 @@ export function ConversationItem({
 
             {/* Hover actions */}
             <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                <ConversationActionsMenu
-                    conversationId={conversation.id}
-                    onDelete={onDelete}
-                />
+                <ConversationActionsMenu conversationId={conversation.id} />
             </div>
         </div>
     );
