@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma";
+import { ConversationRole } from "../../generated/prisma/enums";
 
 export const createDirectConversation = async (
     userId: string,
@@ -53,6 +54,42 @@ export const createDirectConversation = async (
                     user: true,
                 },
             },
+        },
+    });
+
+    return conversation;
+};
+
+export const createGroupConversation = async (
+    creatorId: string,
+    name: string,
+    userIds: string[],
+) => {
+    const uniqueUsers = [...new Set(userIds)];
+
+    const members = [
+        {
+            userId: creatorId,
+            role: ConversationRole.ADMIN,
+        },
+        ...uniqueUsers
+            .filter((id) => id !== creatorId)
+            .map((id) => ({
+                userId: id,
+                role: ConversationRole.MEMBER,
+            })),
+    ];
+
+    const conversation = await prisma.conversation.create({
+        data: {
+            type: "GROUP",
+            name,
+            members: {
+                create: members,
+            },
+        },
+        include: {
+            members: true,
         },
     });
 

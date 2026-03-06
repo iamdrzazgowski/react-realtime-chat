@@ -1,5 +1,4 @@
 import { ConversationList } from '@/components/conversation-list';
-import { conversations } from '@/lib/chat-data';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ProfileSheet } from '@/components/profile-sheet';
@@ -43,7 +42,6 @@ export default function HomePage() {
                             : 'translate-x-0',
                     )}>
                     <ConversationList
-                        conversations={conversations}
                         activeId={activeId}
                         onSelect={handleSelect}
                         onCreateDirectConversation={() =>
@@ -55,7 +53,6 @@ export default function HomePage() {
                     />
                 </div>
 
-                {/* Chat area */}
                 <div
                     className={cn(
                         'absolute inset-0 md:relative md:inset-auto flex-1 transition-transform duration-200',

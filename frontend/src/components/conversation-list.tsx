@@ -7,7 +7,6 @@ import { ConversationItem } from './conversation-item';
 import { useGetConversations } from '@/hooks/useConversation';
 
 export function ConversationList({
-    conversations,
     activeId,
     onSelect,
     onCreateDirectConversation,
