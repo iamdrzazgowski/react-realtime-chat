@@ -9,7 +9,11 @@ export function ConversationItem({
     onSelect,
     currentUserId,
 }) {
-    const participant = conversation.user ?? null;
+    const participant =
+        conversation.type === 'DIRECT'
+            ? (conversation.user ?? null)
+            : (conversation.name ?? null);
+
     const lastMsg = conversation.lastMessage ?? null;
 
     const unread = lastMsg
@@ -35,8 +39,11 @@ export function ConversationItem({
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-muted text-muted-foreground',
                             )}>
-                            {participant?.firstName?.[0]}
-                            {participant?.lastName?.[0]}
+                            {typeof participant === 'string'
+                                ? participant[0]?.toUpperCase()
+                                : participant
+                                  ? `${participant.firstName?.[0] ?? ''}${participant.lastName?.[0] ?? ''}`.toUpperCase()
+                                  : '?'}
                         </AvatarFallback>
                     </Avatar>
                     {participant?.online && (
@@ -55,9 +62,11 @@ export function ConversationItem({
                                         ? 'font-semibold text-foreground'
                                         : 'font-medium text-foreground',
                                 )}>
-                                {participant
-                                    ? `${participant.firstName} ${participant.lastName}`
-                                    : 'Unknown User'}
+                                {typeof participant === 'string'
+                                    ? participant
+                                    : participant
+                                      ? `${participant.firstName} ${participant.lastName}`
+                                      : 'Unknown User'}
                             </span>
                         </div>
                         <span

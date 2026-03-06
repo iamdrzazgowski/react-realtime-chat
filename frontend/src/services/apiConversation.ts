@@ -23,6 +23,32 @@ export const createDirectConversation = async (otherUserId: string) => {
     return res.json();
 };
 
+export const createGroupConversation = async (
+    name: string,
+    userIds: string[],
+) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        throw new Error('No token found!');
+    }
+
+    const res = await fetch(`${API_URL}/api/conversation/group`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, userIds }),
+    });
+
+    if (!res.ok) {
+        throw new Error('Problem with create group');
+    }
+
+    return res.json();
+};
+
 export const getConversations = async () => {
     const token = localStorage.getItem('token');
 

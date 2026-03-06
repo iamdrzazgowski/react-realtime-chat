@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     createDirectConversation as createDirectConversationAPI,
+    createGroupConversation as createGroupConversationAPI,
     getConversations as getConversationsAPI,
 } from '@/services/apiConversation';
 import toast from 'react-hot-toast';
@@ -20,6 +21,29 @@ export const useCreateDirectConversation = () => {
     });
 
     return { createDirectConversation, isPending };
+};
+
+export const useCreateGroupConversation = () => {
+    const queryClient = useQueryClient();
+
+    const { mutate: createGroupConversation, isPending } = useMutation({
+        mutationFn: ({
+            groupName,
+            userIds,
+        }: {
+            groupName: string;
+            userIds: string[];
+        }) => createGroupConversationAPI(groupName, userIds),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            toast.success('Conversation successfully created!');
+        },
+        onError: (err) => {
+            toast.error(err.message);
+        },
+    });
+
+    return { createGroupConversation, isPending };
 };
 
 export const useGetConversations = () => {

@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useUsers } from '@/hooks/useUsers';
 import type { User } from './direct-conversation-dialog';
 import { Spinner } from './ui/spinner';
+import { useCreateGroupConversation } from '@/hooks/useConversation';
 
 interface CreateGroupDialogProps {
     open: boolean;
@@ -31,6 +32,7 @@ export function CreateGroupDialog({
     const [groupName, setGroupName] = useState('');
     const [search, setSearch] = useState('');
     const [selected, setSelected] = useState<Set<string>>(new Set());
+    const { createGroupConversation, isPending } = useCreateGroupConversation();
 
     const { isLoading, usersData } = useUsers({
         search,
@@ -62,6 +64,10 @@ export function CreateGroupDialog({
     const handleCreate = () => {
         console.log(selected);
         if (groupName.trim() && selected.size >= 2) {
+            createGroupConversation({
+                groupName,
+                userIds: Array.from(selected),
+            });
             onOpenChange(false);
             setGroupName('');
             setSelected(new Set());
@@ -202,7 +208,9 @@ export function CreateGroupDialog({
                     </Button>
                     <Button
                         onClick={handleCreate}
-                        disabled={!groupName.trim() || selected.size < 2}
+                        disabled={
+                            !groupName.trim() || selected.size < 2 || isPending
+                        }
                         className='h-9 text-sm gap-1.5'>
                         <Users className='h-3.5 w-3.5' />
                         Utworz ({selected.size})
