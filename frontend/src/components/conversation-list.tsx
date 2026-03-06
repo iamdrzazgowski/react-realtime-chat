@@ -5,10 +5,9 @@ import { SidebarHeader } from './sidebar-header';
 import { ConversationSearch } from './conversation-search';
 import { ConversationItem } from './conversation-item';
 import { useGetConversations } from '@/hooks/useConversation';
+import { Link } from 'react-router';
 
 export function ConversationList({
-    activeId,
-    onSelect,
     onCreateDirectConversation,
     onCreateGroup,
     onOpenProfile,
@@ -35,13 +34,15 @@ export function ConversationList({
     }, [conversationsData, search]);
 
     const renderItem = (conversation) => (
-        <ConversationItem
-            key={conversation.id}
-            conversation={conversation}
-            isActive={activeId === conversation.id}
-            onSelect={onSelect}
-            currentUserId={user.id}
-        />
+        <Link to={`/conversation/${conversation.id}`}>
+            <ConversationItem
+                key={conversation.id}
+                conversation={conversation}
+                // isActive={activeId === conversation.id}
+                // onSelect={onSelect}
+                currentUserId={user.id}
+            />
+        </Link>
     );
 
     return (

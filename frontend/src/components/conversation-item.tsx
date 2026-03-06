@@ -2,13 +2,13 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { formatRelativeTime } from '../lib/chat-data';
 import { ConversationActionsMenu } from './conversation-actions-menu';
+import { useParams } from 'react-router';
 
-export function ConversationItem({
-    conversation,
-    isActive,
-    onSelect,
-    currentUserId,
-}) {
+export function ConversationItem({ conversation, currentUserId }) {
+    const { conversationID } = useParams();
+
+    const isActive = conversationID === conversation.id;
+
     const participant =
         conversation.type === 'DIRECT'
             ? (conversation.user ?? null)
@@ -16,15 +16,17 @@ export function ConversationItem({
 
     const lastMsg = conversation.lastMessage ?? null;
 
-    const unread = lastMsg
-        ? lastMsg.senderId !== currentUserId && !lastMsg.read
-        : false;
+    const unread =
+        lastMsg &&
+        lastMsg.senderId !== currentUserId &&
+        (!conversation.lastReadAt ||
+            new Date(lastMsg.createdAt) > new Date(conversation.lastReadAt));
 
     return (
         <div className='group relative'>
             <button
                 type='button'
-                onClick={() => onSelect(conversation.id)}
+                // onClick={() => onSelect(conversation.id)}
                 className={cn(
                     'flex items-center gap-3 w-full px-4 py-3 text-left transition-colors hover:bg-secondary/80',
                     isActive && 'bg-secondary',

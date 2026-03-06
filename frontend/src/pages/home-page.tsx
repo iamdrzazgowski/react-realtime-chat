@@ -8,7 +8,6 @@ import { DirectConversationDialog } from '@/components/direct-conversation-dialo
 import { CreateGroupDialog } from '@/components/create-group-dialog';
 
 export default function HomePage() {
-    const [activeId, setActiveId] = useState<string | null>(null);
     const [mobileShowChat, setMobileShowChat] = useState(false);
     const { user } = useUser();
 
@@ -20,11 +19,6 @@ export default function HomePage() {
 
     // const activeConversation =
     //     conversations.find((c) => c.id === activeId) ?? null;
-
-    const handleSelect = (id: string) => {
-        setActiveId(id);
-        setMobileShowChat(true);
-    };
 
     const handleBack = () => {
         setMobileShowChat(false);
@@ -42,8 +36,6 @@ export default function HomePage() {
                             : 'translate-x-0',
                     )}>
                     <ConversationList
-                        activeId={activeId}
-                        onSelect={handleSelect}
                         onCreateDirectConversation={() =>
                             setCreateDirectConversation(true)
                         }

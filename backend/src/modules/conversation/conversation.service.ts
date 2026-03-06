@@ -105,7 +105,15 @@ export const getUserConversations = async (userId: string) => {
         },
         include: {
             members: {
-                include: { user: true },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
             },
             messages: {
                 orderBy: { createdAt: "desc" },
@@ -123,11 +131,16 @@ export const getUserConversations = async (userId: string) => {
     return conversations.map((conv) => {
         const lastMessage = conv.messages[0] || null;
 
+        const currentMember = conv.members.find((m) => m.userId === userId);
+        const otherMember = conv.members.find((m) => m.userId !== userId);
+
         if (conv.type === "DIRECT") {
-            const otherMember = conv.members.find((m) => m.userId !== userId);
             return {
                 id: conv.id,
                 type: conv.type,
+
+                lastReadAt: currentMember?.lastReadAt ?? null,
+
                 user: otherMember
                     ? {
                           id: otherMember.user.id,
@@ -135,29 +148,13 @@ export const getUserConversations = async (userId: string) => {
                           lastName: otherMember.user.lastName,
                       }
                     : null,
+
                 lastMessage: lastMessage
                     ? {
                           id: lastMessage.id,
                           content: lastMessage.content,
                           createdAt: lastMessage.createdAt,
-                          sender: {
-                              id: lastMessage.sender.id,
-                              firstName: lastMessage.sender.firstName,
-                              lastName: lastMessage.sender.lastName,
-                          },
-                      }
-                    : null,
-            };
-        } else {
-            return {
-                id: conv.id,
-                type: conv.type,
-                name: conv.name,
-                lastMessage: lastMessage
-                    ? {
-                          id: lastMessage.id,
-                          content: lastMessage.content,
-                          createdAt: lastMessage.createdAt,
+                          senderId: lastMessage.senderId,
                           sender: {
                               id: lastMessage.sender.id,
                               firstName: lastMessage.sender.firstName,
@@ -167,5 +164,27 @@ export const getUserConversations = async (userId: string) => {
                     : null,
             };
         }
+
+        return {
+            id: conv.id,
+            type: conv.type,
+            name: conv.name,
+
+            lastReadAt: currentMember?.lastReadAt ?? null,
+
+            lastMessage: lastMessage
+                ? {
+                      id: lastMessage.id,
+                      content: lastMessage.content,
+                      createdAt: lastMessage.createdAt,
+                      senderId: lastMessage.senderId,
+                      sender: {
+                          id: lastMessage.sender.id,
+                          firstName: lastMessage.sender.firstName,
+                          lastName: lastMessage.sender.lastName,
+                      },
+                  }
+                : null,
+        };
     });
 };
