@@ -1,34 +1,50 @@
+// components/chat/chat-area.tsx
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatHeader } from './chat-header';
 import { MessageBubble } from './message-bubble';
 import { MessageInput } from './message-input';
 import { TypingIndicator } from './typing-indicator';
-import { useRef, useState, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
 import { useGetConversationById } from '@/hooks/useConversation';
 import { useUser } from '@/hooks/useAuth';
-import type { Message as ChatMessage } from '@/lib/chat-data';
 import { ConversationSkeleton } from './conversation-skeleton';
+import { useRef, useEffect, useMemo } from 'react';
+import { useChatSocket } from '@/hooks/useChatSocket';
+import { groupMessagesByDate } from '@/lib/chat';
+import { MessageCircle } from 'lucide-react';
 
-interface UiMessage extends ChatMessage {
+export interface UiMessage {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: Date;
     senderName: string;
 }
 
 export function ChatArea() {
     const bottomRef = useRef<HTMLDivElement>(null);
-    const [isTyping] = useState(false);
-    const [showInfo, setShowInfo] = useState(false);
-
     const { conversationData, isLoading } = useGetConversationById();
     const conversation = conversationData?.conversation;
-
     const { user } = useUser();
 
+    const { sendMessage } = useChatSocket(conversation?.id, user.id);
+
+    const messages: UiMessage[] = useMemo(
+        () =>
+            conversation?.messages?.map((msg: any) => ({
+                id: msg.id,
+                senderId: msg.sender.id,
+                text: msg.content,
+                timestamp: new Date(msg.createdAt),
+                senderName: `${msg.sender.firstName} ${msg.sender.lastName}`,
+            })) ?? [],
+        [conversation?.messages],
+    );
+
+    const groupedMessages = groupMessagesByDate(messages);
+
     useEffect(() => {
-        if (conversation?.messages?.length) {
-            bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }
-    }, [conversation?.messages]);
+        bottomRef.current?.scrollIntoView();
+    }, [messages]);
 
     if (isLoading) return <ConversationSkeleton />;
 
@@ -41,10 +57,10 @@ export function ChatArea() {
                     </div>
                     <div className='text-center'>
                         <p className='text-sm font-medium text-foreground'>
-                            Wybierz konwersacje
+                            Wybierz konwersację
                         </p>
                         <p className='text-xs text-muted-foreground mt-1'>
-                            Kliknij na rozmowe, aby wyswietlic wiadomosci
+                            Kliknij na rozmowę, aby wyświetlić wiadomości
                         </p>
                     </div>
                 </div>
@@ -53,68 +69,13 @@ export function ChatArea() {
     }
 
     const participant = conversation.members
-        ?.map(
-            (m: {
-                user: {
-                    id: string;
-                    firstName: string;
-                    lastName: string;
-                    isOnline: boolean;
-                };
-            }) => m.user,
-        )
-        .find((u: { id: string }) => u.id !== user.id);
+        ?.map((m: any) => m.user)
+        .find((u: any) => u.id !== user.id);
 
-    const chatTitle =
-        conversation.type === 'GROUP'
-            ? conversation.name || 'Grupa'
-            : participant
-              ? `${participant.firstName} ${participant.lastName}`
-              : 'Rozmowa';
-
-    const avatar =
-        conversation.type === 'GROUP'
-            ? (() => {
-                  // Weź pierwsze litery pierwszych 2 wyrazów nazwy grupy
-                  if (!chatTitle) return 'G';
-                  const words = chatTitle.split(' ');
-                  const initials = words
-                      .slice(0, 1)
-                      .map((w) => w[0]?.toUpperCase() ?? '')
-                      .join('');
-                  return initials || 'G';
-              })()
-            : participant
-              ? `${participant.firstName?.[0].toUpperCase() ?? ''}${participant.lastName?.[0].toUpperCase() ?? ''}`.trim() ||
-                'U'
-              : 'U';
-
-    const groupedMessages: { date: string; messages: UiMessage[] }[] = [];
-    if (conversation.messages?.length) {
-        for (const msg of conversation.messages) {
-            const mappedMsg: UiMessage = {
-                id: msg.id,
-                senderId: msg.sender.id,
-                text: msg.content,
-                timestamp: new Date(msg.createdAt),
-                read: true,
-                senderName: `${msg.sender.firstName} ${msg.sender.lastName}`,
-            };
-
-            const dateStr = mappedMsg.timestamp.toLocaleDateString('pl-PL', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-            });
-
-            const lastGroup = groupedMessages[groupedMessages.length - 1];
-            if (lastGroup && lastGroup.date === dateStr) {
-                lastGroup.messages.push(mappedMsg);
-            } else {
-                groupedMessages.push({ date: dateStr, messages: [mappedMsg] });
-            }
-        }
-    }
+    const handleSendMessage = (text: string) => {
+        if (!conversation || !text.trim()) return;
+        sendMessage(conversation.id, user.id, text.trim());
+    };
 
     return (
         <div className='flex h-full'>
@@ -125,14 +86,16 @@ export function ChatArea() {
                             conversation.type === 'GROUP'
                                 ? 'group'
                                 : (participant?.id ?? 'user'),
-                        name: chatTitle,
-                        avatar: avatar,
-                        online:
+                        name:
                             conversation.type === 'GROUP'
-                                ? false
-                                : (participant?.isOnline ?? false),
+                                ? conversation.name || 'Grupa'
+                                : `${participant?.firstName} ${participant?.lastName}`,
+                        avatar: participant
+                            ? `${participant.firstName?.[0]}${participant.lastName?.[0]}`.toUpperCase()
+                            : 'U',
+                        online: participant?.isOnline ?? false,
                     }}
-                    onToggleInfo={() => setShowInfo(!showInfo)}
+                    onToggleInfo={() => {}}
                 />
 
                 <ScrollArea className='flex-1 px-4'>
@@ -171,19 +134,15 @@ export function ChatArea() {
                                 })}
                             </div>
                         ))}
-
-                        {participant && (
-                            <TypingIndicator
-                                name={participant.firstName}
-                                visible={isTyping}
-                            />
-                        )}
-
+                        <TypingIndicator
+                            name={participant?.firstName}
+                            visible={false}
+                        />
                         <div ref={bottomRef} />
                     </div>
                 </ScrollArea>
 
-                <MessageInput onSend={() => {}} />
+                <MessageInput onSend={handleSendMessage} />
             </div>
         </div>
     );

@@ -1,10 +1,35 @@
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { formatRelativeTime } from '../lib/chat-data';
+import { formatRelativeTime } from '../lib/chat';
 import { ConversationActionsMenu } from './conversation-actions-menu';
 import { useParams } from 'react-router';
 
-export function ConversationItem({ conversation, currentUserId }) {
+interface ConversationItemProps {
+    conversation: {
+        id: string;
+        type: 'DIRECT' | 'GROUP';
+        user?: {
+            firstName?: string;
+            lastName?: string;
+            online?: boolean;
+        } | null;
+        name?: string | null;
+        lastMessage?: {
+            id: string;
+            senderId: string;
+            content: string;
+            createdAt?: string | Date;
+            timestamp?: string | Date;
+        } | null;
+        lastReadAt?: string | Date | null;
+    };
+    currentUserId: string;
+}
+
+export function ConversationItem({
+    conversation,
+    currentUserId,
+}: ConversationItemProps) {
     const { conversationID } = useParams();
 
     const isActive = conversationID === conversation.id;
@@ -16,11 +41,19 @@ export function ConversationItem({ conversation, currentUserId }) {
 
     const lastMsg = conversation.lastMessage ?? null;
 
+    const rawLastMsgDate = lastMsg?.createdAt ?? lastMsg?.timestamp ?? null;
+
+    const lastMsgDate = rawLastMsgDate ? new Date(rawLastMsgDate) : null;
+
+    const lastReadDate = conversation.lastReadAt
+        ? new Date(conversation.lastReadAt)
+        : null;
+
     const unread =
-        lastMsg &&
+        !!lastMsg &&
+        !!lastMsgDate &&
         lastMsg.senderId !== currentUserId &&
-        (!conversation.lastReadAt ||
-            new Date(lastMsg.createdAt) > new Date(conversation.lastReadAt));
+        (!lastReadDate || lastMsgDate > lastReadDate);
 
     return (
         <div className='group relative'>
@@ -48,7 +81,7 @@ export function ConversationItem({ conversation, currentUserId }) {
                                   : '?'}
                         </AvatarFallback>
                     </Avatar>
-                    {participant?.online && (
+                    {typeof participant !== 'string' && participant?.online && (
                         <span className='absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card bg-online' />
                     )}
                 </div>
@@ -79,7 +112,9 @@ export function ConversationItem({ conversation, currentUserId }) {
                                     : 'text-muted-foreground',
                             )}>
                             {lastMsg
-                                ? formatRelativeTime(lastMsg.timestamp)
+                                ? formatRelativeTime(
+                                      lastMsg.createdAt ?? lastMsg.timestamp,
+                                  )
                                 : ''}
                         </span>
                     </div>
@@ -94,7 +129,7 @@ export function ConversationItem({ conversation, currentUserId }) {
                             {lastMsg
                                 ? (lastMsg.senderId === currentUserId
                                       ? 'Ty: '
-                                      : '') + lastMsg.text
+                                      : '') + lastMsg.content
                                 : 'No messages yet'}
                         </p>
                     </div>

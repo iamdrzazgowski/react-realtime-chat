@@ -73,6 +73,7 @@ export const useGetConversationById = () => {
         queryKey: ['conversation', conversationID],
         queryFn: () => getConversationById(conversationID as string),
         enabled: !!conversationID,
+        staleTime: 1000 * 60,
     });
 
     return { isLoading, isError, conversationData };

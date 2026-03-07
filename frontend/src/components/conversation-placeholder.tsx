@@ -25,7 +25,6 @@ export default function ConversationPlaceholder() {
     return (
         <div className='flex items-center justify-center w-full h-screen bg-white'>
             <div className='flex flex-col items-center text-center gap-4 max-w-xs w-full px-6'>
-                {/* Icon */}
                 <div className='flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 mb-2'>
                     <svg
                         width='26'
@@ -49,7 +48,6 @@ export default function ConversationPlaceholder() {
                     </p>
                 </div>
 
-                {/* Hint */}
                 <div className='flex items-center gap-2 mt-2'>
                     <span
                         className='text-xs text-slate-400 transition-all duration-300'
@@ -63,7 +61,6 @@ export default function ConversationPlaceholder() {
                     </span>
                 </div>
 
-                {/* Dot indicators */}
                 <div className='flex items-center gap-1.5 mt-1'>
                     {hints.map((_, i) => (
                         <span

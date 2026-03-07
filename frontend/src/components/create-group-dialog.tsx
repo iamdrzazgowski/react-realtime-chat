@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, Users, X } from 'lucide-react';
 import { useState } from 'react';
-import { users } from '@/lib/chat-data';
 import { cn } from '@/lib/utils';
 import { useUsers } from '@/hooks/useUsers';
 import type { User } from './direct-conversation-dialog';
@@ -59,7 +58,9 @@ export function CreateGroupDialog({
         });
     };
 
-    const selectedUsers = users.filter((u) => selected.has(u.id));
+    const selectedUsers = (usersData?.usersData ?? []).filter((u) =>
+        selected.has(u.id),
+    );
 
     const handleCreate = () => {
         console.log(selected);

@@ -3,7 +3,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 export function ConversationSkeleton() {
     return (
         <div className='flex h-full flex-col bg-background'>
-            {/* Header */}
             <div className='flex items-center gap-3 border-b px-4 py-3'>
                 <div className='h-9 w-9 rounded-full bg-muted animate-pulse' />
                 <div className='flex flex-col gap-1.5'>
@@ -12,7 +11,6 @@ export function ConversationSkeleton() {
                 </div>
             </div>
 
-            {/* Messages */}
             <ScrollArea className='flex-1 px-4'>
                 <div className='flex flex-col gap-4 py-4'>
                     <MessageSkeletonRow
@@ -40,7 +38,6 @@ export function ConversationSkeleton() {
                 </div>
             </ScrollArea>
 
-            {/* Input */}
             <div className='border-t px-4 py-3'>
                 <div className='h-10 w-full rounded-lg bg-muted animate-pulse' />
             </div>

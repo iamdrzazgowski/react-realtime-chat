@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 
 import { TooltipProvider } from '@/components/ui/tooltip';
-import type { User } from '@/lib/chat-data';
+import type { User } from '@/lib/chat';
 import { ArrowLeft } from 'lucide-react';
 
 interface ChatHeaderProps {

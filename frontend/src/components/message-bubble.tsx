@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
-import type { Message } from '@/lib/chat-data';
-import { formatTime } from '@/lib/chat-data';
-import { Check, CheckCheck } from 'lucide-react';
+import type { Message } from '@/lib/chat';
+import { formatTime } from '@/lib/chat';
 
 interface MessageBubbleProps {
     message: Message;
@@ -35,12 +34,6 @@ export function MessageBubble({
                         <span className='text-[10px]'>
                             {formatTime(message.timestamp)}
                         </span>
-                        {isOwn &&
-                            (message.read ? (
-                                <CheckCheck className='h-3 w-3' />
-                            ) : (
-                                <Check className='h-3 w-3' />
-                            ))}
                     </div>
                 )}
             </div>

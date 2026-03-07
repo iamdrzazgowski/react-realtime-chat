@@ -42,10 +42,8 @@ export function MessageInput({ onSend }: MessageInputProps) {
         <TooltipProvider>
             <footer className='border-t border-border bg-card px-4 py-3'>
                 <div className='flex items-center gap-2'>
-                    {/* Emoji */}
                     <EmojiPicker onSelect={handleEmojiSelect} />
 
-                    {/* Textarea */}
                     <div className='flex-1 relative'>
                         <textarea
                             ref={textareaRef}
@@ -58,7 +56,6 @@ export function MessageInput({ onSend }: MessageInputProps) {
                         />
                     </div>
 
-                    {/* Send button */}
                     <Button
                         size='icon'
                         className='h-8 w-8 shrink-0 rounded-full'
