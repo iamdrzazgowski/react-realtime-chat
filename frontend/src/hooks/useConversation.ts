@@ -2,9 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     createDirectConversation as createDirectConversationAPI,
     createGroupConversation as createGroupConversationAPI,
+    getConversationById,
     getConversations as getConversationsAPI,
 } from '@/services/apiConversation';
 import toast from 'react-hot-toast';
+import { useParams } from 'react-router';
 
 export const useCreateDirectConversation = () => {
     const queryClient = useQueryClient();
@@ -58,4 +60,21 @@ export const useGetConversations = () => {
     });
 
     return { isLoading, isError, conversationsData };
+};
+
+export const useGetConversationById = () => {
+    const { conversationID } = useParams();
+    console.log(conversationID);
+
+    const {
+        isLoading,
+        isError,
+        data: conversationData,
+    } = useQuery({
+        queryKey: ['conversation', conversationID],
+        queryFn: () => getConversationById(conversationID as string),
+        enabled: !!conversationID,
+    });
+
+    return { isLoading, isError, conversationData };
 };

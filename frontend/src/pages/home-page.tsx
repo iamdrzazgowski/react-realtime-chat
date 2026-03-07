@@ -8,7 +8,6 @@ import { DirectConversationDialog } from '@/components/direct-conversation-dialo
 import { CreateGroupDialog } from '@/components/create-group-dialog';
 
 export default function HomePage() {
-    const [mobileShowChat, setMobileShowChat] = useState(false);
     const { user } = useUser();
 
     // Dialog states
@@ -20,10 +19,6 @@ export default function HomePage() {
     // const activeConversation =
     //     conversations.find((c) => c.id === activeId) ?? null;
 
-    const handleBack = () => {
-        setMobileShowChat(false);
-    };
-
     return (
         <>
             <main className='flex h-dvh overflow-hidden bg-background'>
@@ -31,9 +26,7 @@ export default function HomePage() {
                 <div
                     className={cn(
                         'w-full md:w-80 lg:w-96 shrink-0 transition-transform duration-200',
-                        mobileShowChat
-                            ? '-translate-x-full md:translate-x-0'
-                            : 'translate-x-0',
+                        'translate-x-0',
                     )}>
                     <ConversationList
                         onCreateDirectConversation={() =>
@@ -48,9 +41,7 @@ export default function HomePage() {
                 <div
                     className={cn(
                         'absolute inset-0 md:relative md:inset-auto flex-1 transition-transform duration-200',
-                        mobileShowChat
-                            ? 'translate-x-0'
-                            : 'translate-x-full md:translate-x-0',
+                        'translate-x-full md:translate-x-0',
                     )}>
                     <Outlet />
                 </div>

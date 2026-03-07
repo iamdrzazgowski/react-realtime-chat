@@ -1,5 +1,5 @@
-import React from 'react';
+import { ChatArea } from './chat-area';
 
 export default function Conversation() {
-    return <div>Conversation</div>;
+    return <ChatArea />;
 }

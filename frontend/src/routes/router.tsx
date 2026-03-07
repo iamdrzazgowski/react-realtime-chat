@@ -4,8 +4,8 @@ import LoginPage from '@/pages/login-page';
 import PageNotFound from '@/pages/page-not-found';
 import SignupPage from '@/pages/signup-page';
 import ProtectedRoute from './protected-route';
-import Conversation from '@/components/conversation';
 import ConversationPlaceholder from '@/components/conversation-placeholder';
+import { ChatArea } from '@/components/chat-area';
 
 export const router = createBrowserRouter([
     { path: '/login', element: <LoginPage /> },
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'conversation/:conversationID',
-                element: <Conversation />,
+                element: <ChatArea />,
             },
         ],
     },

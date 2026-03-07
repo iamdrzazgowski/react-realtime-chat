@@ -188,3 +188,42 @@ export const getUserConversations = async (userId: string) => {
         };
     });
 };
+
+export const getConversationById = async (conversationId: string) => {
+    const conversationData = await prisma.conversation.findUnique({
+        where: {
+            id: conversationId,
+        },
+        include: {
+            members: {
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                            firstName: true,
+                            lastName: true,
+                            isOnline: true,
+                        },
+                    },
+                },
+            },
+            messages: {
+                orderBy: {
+                    createdAt: "asc",
+                },
+                include: {
+                    sender: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    return conversationData;
+};

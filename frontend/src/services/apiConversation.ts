@@ -68,3 +68,24 @@ export const getConversations = async () => {
 
     return res.json();
 };
+
+export const getConversationById = async (conversationId: string) => {
+    console.log(conversationId);
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        throw new Error('No token found!');
+    }
+
+    const res = await fetch(`${API_URL}/api/conversation/${conversationId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to fetch user conversations');
+    }
+
+    return res.json();
+};
