@@ -70,7 +70,6 @@ export const getConversations = async () => {
 };
 
 export const getConversationById = async (conversationId: string) => {
-    console.log(conversationId);
     const token = localStorage.getItem('token');
 
     if (!token) {

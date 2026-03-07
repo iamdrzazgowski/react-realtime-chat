@@ -64,7 +64,6 @@ export const useGetConversations = () => {
 
 export const useGetConversationById = () => {
     const { conversationID } = useParams();
-    console.log(conversationID);
 
     const {
         isLoading,
