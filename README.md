@@ -1,206 +1,183 @@
-# React Realtime Chat – Plan działania (harmonogram)
+# React Realtime Chat
 
-## Cel projektu
-MVP aplikacji typu chat messenger z obsługą rozmów 1-1 i grupowych, wiadomości w czasie rzeczywistym, autoryzacją użytkowników oraz responsywnym UI. Projekt tworzony pod portfolio / GitHub.
+A fullstack **real-time chat application** built with **React and Node.js**.  
+The application allows users to authenticate, join chat rooms and exchange
+messages instantly using **WebSockets (Socket.IO)**.
+
+This project demonstrates how to build a modern real-time application with
+**custom JWT authentication**, **PostgreSQL database running in Docker**, REST
+API and WebSocket communication.
 
 ---
 
-## Stack technologiczny
+# Features
+
+- User authentication with custom **JWT implementation**
+- Real-time messaging using **Socket.IO**
+- Chat rooms support
+- Instant message updates without refreshing the page
+- REST API for authentication and user management
+- Server state management using **React Query**
+- Responsive UI styled with **TailwindCSS**
+- Client-side routing with **React Router**
+- **PostgreSQL database running in Docker**
+
+---
+
+# Architecture
+
+The project is divided into two main parts:
+
+```
+react-realtime-chat
+│
+├── client/        # React frontend
+├── server/        # Express backend + Socket.IO
+```
 
 ### Frontend
+
+Responsible for:
+
+- UI rendering
+- routing
+- API communication
+- websocket connection
+
+### Backend
+
+Responsible for:
+
+- authentication
+- REST API
+- websocket server
+- database communication
+
+---
+
+# Tech Stack
+
+## Frontend
+
 - React
-- React Query
-- Tailwind CSS
 - React Router
-- WebSocket / Socket.io client
+- React Query
+- TailwindCSS
+- Socket.IO Client
 
-### Backend
+## Backend
+
 - Node.js
-- Express / NestJS
+- Express.js
+- Socket.IO
+- JWT (custom authentication implementation)
+
+## Database
+
 - PostgreSQL
-- WebSocket / Socket.io
-- JWT (auth)
+- Docker
 
 ---
 
-## **Dzień 1 – Fundamenty architektury**
+# Real-Time Communication
 
-### Backend
-- Zaplanowanie modeli danych:
-  - User [X]
-  - Conversation (1-1 / GROUP) [X]
-  - ConversationMember [X]
-  - Message [X]
-- Określenie relacji między tabelami [X]
-- Konfiguracja projektu backendowego [X]
-- Połączenie z PostgreSQL [X]
+The application uses **Socket.IO** for real-time communication between the
+server and clients.
 
-### Frontend
-- Inicjalizacja projektu (React + Vite) [X]
-- Konfiguracja Tailwind CSS [X]
-- Podstawowa struktura folderów [X]
-- Layout aplikacji:
-  - Sidebar (lista rozmów) [X]
-  - Main chat area [X]
+Typical flow:
+
+1. User logs in and receives a **JWT token**
+2. Client connects to the **Socket.IO server**
+3. User sends a message
+4. Server broadcasts the message to all users in the room
+5. UI updates instantly
 
 ---
 
-## **Dzień 2 – Autoryzacja i użytkownicy**
+# Authentication
 
-### Backend
-- Rejestracja użytkownika [X]
-- Logowanie użytkownika [X]
-- Generowanie JWT [X]
-- Middleware autoryzacji [X]
-- Endpoint:
-  - `GET /user` [X]
+Authentication is implemented using **JSON Web Tokens (JWT)**.
 
-### Frontend
-- Widoki logowania i rejestracji [X]
-- Obsługa sesji użytkownika [X]
-- Ochrona tras (private routes) [X]
-- Pobranie danych zalogowanego użytkownika [X]
+Flow:
+
+1. User logs in via REST API
+2. Server generates a **JWT token**
+3. Client stores the token
+4. Token is attached to future requests
 
 ---
 
-## **Dzień 3 – Rozmowy 1-1 i grupowe**
+# Installation
 
-### Backend
-- Endpoint tworzenia rozmowy 1-1 [ ]
-- Endpoint tworzenia rozmowy grupowej [ ]
-- Dodawanie użytkowników do grupy [ ]
-- Pobieranie listy rozmów użytkownika [ ]
-- Sprawdzenie istnienia rozmowy 1-1 [ ]
+Clone the repository:
 
-### Frontend
-- Widok listy rozmów (sidebar) [ ]
-- Rozróżnienie rozmów:
-  - 1-1
-  - GROUP [ ]
-- Formularz tworzenia rozmowy grupowej [ ]
-- Wybór użytkowników do grupy [ ]
+```bash
+git clone https://github.com/iamdrzazgowski/react-realtime-chat.git
+cd react-realtime-chat
+```
 
 ---
 
-## **Dzień 4 – Wiadomości**
+# Running the Backend
 
-### Backend
-- Model Message:
-  - id [ ]
-  - conversationId [ ]
-  - senderId [ ]
-  - content [ ]
-  - createdAt [ ]
-- Endpoint wysyłania wiadomości [ ]
-- Endpoint pobierania historii wiadomości [ ]
-- Paginacja wiadomości [ ]
+```bash
+cd server
+npm install
+npm run dev
+```
 
-### Frontend
-- Widok listy wiadomości [ ]
-- Wysyłanie wiadomości [ ]
-- Scroll do ostatniej wiadomości [ ]
-- Stylowanie:
-  - sent / received [ ]
-- Wyświetlanie autora wiadomości (w grupach) [ ]
+Server will run on:
+
+```
+http://localhost:5001
+```
 
 ---
 
-## **Dzień 5 – Realtime (WebSocket / Socket.io)**
+# Running the Frontend
 
-### Backend
-- Konfiguracja Socket.io [ ]
-- Dołączanie użytkownika do roomów rozmów [ ]
-- Emitowanie nowych wiadomości [ ]
-- Obsługa reconnect / disconnect [ ]
+```bash
+cd client
+npm install
+npm run dev
+```
 
-### Frontend
-- Połączenie z WebSocket [ ]
-- Odbieranie wiadomości w czasie rzeczywistym [ ]
-- Aktualizacja cache React Query [ ]
-- Obsługa wielu otwartych rozmów [ ]
+Application will run on:
 
----
-
-## **Dzień 6 – Statusy i UX**
-
-### Backend
-- Status użytkownika:
-  - online / offline [ ]
-- Emitowanie statusów przez WebSocket [ ]
-- Event „user typing” [ ]
-
-### Frontend
-- Wyświetlanie statusu użytkownika [ ]
-- Indykator „typing…” [ ]
-- Oznaczanie nieprzeczytanych wiadomości [ ]
-- Skeleton loaders [ ]
+```
+http://localhost:5173
+```
 
 ---
 
-## **Dzień 7 – Zarządzanie grupami**
+# Environment Variables
 
-### Backend
-- Dodawanie użytkowników do grupy [ ]
-- Usuwanie użytkowników z grupy [ ]
-- Zmiana nazwy grupy [ ]
-- Sprawdzenie uprawnień (admin grupy) [ ]
+Create `.env` files in **client** and **server** directories.
 
-### Frontend
-- Widok ustawień grupy [ ]
-- Dodawanie / usuwanie uczestników [ ]
-- Zmiana nazwy grupy [ ]
-- Oznaczenie rozmowy grupowej [ ]
+### server/.env
 
-👉 **Po tym dniu MVP jest gotowe**
+```
+PORT=5000
+JWT_SECRET=your_secret_key
 
----
+DATABASE_URL=database_url
+```
 
-## **Dzień 8 – UI i responsywność**
+### client/.env
 
-### Frontend
-- Responsywny layout (mobile / desktop) [ ]
-- Avatar użytkownika (placeholder) [ ]
-- Lepsze bubble chat UI [ ]
-- Kolory, spacing, hover states [ ]
-- Puste stany (no conversations / no messages) [ ]
+```
+VITE_API_URL=http://localhost:5001
+```
 
 ---
 
-## **Dzień 9 – Testy i optymalizacja**
+# What I Learned
 
-### Backend
-- Testy endpointów [ ]
-- Walidacja danych wejściowych [ ]
-- Obsługa błędów [ ]
+This project helped me practice:
 
-### Frontend
-- Testy manualne głównych flow [ ]
-- Optymalizacja zapytań React Query [ ]
-- Cleanup WebSocket listeners [ ]
-
----
-
-## **Dzień 10 – Deployment i dokumentacja**
-
-### Backend
-- Deployment API (Render / Railway) [ ]
-- Konfiguracja bazy PostgreSQL [ ]
-- Zmienne środowiskowe [ ]
-
-### Frontend
-- Deployment frontend (Vercel) [ ]
-- Konfiguracja env (API URL, WS URL) [ ]
-
-### Dokumentacja
-- README:
-  - opis projektu [ ]
-  - stack technologiczny [ ]
-  - funkcjonalności [ ]
-  - screenshots / GIF [ ]
-
----
-
-## Uwagi
-- WebSocket / Socket.io to najlepszy wybór do aplikacji chatowych. [ ]
-- MVP można zamknąć w 6–7 dni. [ ]
-- Projekt pokazuje realtime, pracę z danymi, UX i architekturę full-stack. [ ]
+- building **real-time applications**
+- working with **WebSockets**
+- implementing **JWT authentication**
+- managing server state with **React Query**
+- structuring **fullstack applications**
+- integrating **PostgreSQL with Docker**
