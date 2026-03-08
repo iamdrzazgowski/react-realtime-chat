@@ -33,6 +33,7 @@ export interface Message {
     text: string;
     timestamp: Date;
     read: boolean;
+    senderName?: string;
 }
 
 export interface Conversation {

@@ -13,6 +13,7 @@ export function MessageBubble({
     isOwn,
     showTimestamp = true,
 }: MessageBubbleProps) {
+    console.log(isOwn);
     return (
         <div className={cn('flex', isOwn ? 'justify-end' : 'justify-start')}>
             <div
@@ -22,7 +23,26 @@ export function MessageBubble({
                         ? 'bg-message-own text-message-own-foreground rounded-br-md'
                         : 'bg-message-other text-message-other-foreground rounded-bl-md',
                 )}>
-                <p>{message.text}</p>
+                {!isOwn && message?.senderName && (
+                    <p className='text-[11px] font-medium mb-0.5 opacity-70'>
+                        {message?.senderName}
+                    </p>
+                )}
+
+                <p
+                    className={cn(
+                        'px-3 py-2 rounded-2xl text-sm leading-relaxed',
+                        isOwn
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-200 text-gray-900',
+                    )}
+                    style={{
+                        width: 'fit-content',
+                        wordBreak: 'break-word',
+                    }}>
+                    {message.text}
+                </p>
+
                 {showTimestamp && (
                     <div
                         className={cn(

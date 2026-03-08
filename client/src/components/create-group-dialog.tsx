@@ -101,7 +101,7 @@ export function CreateGroupDialog({
                                     key={user.id}
                                     variant='secondary'
                                     className='gap-1 pr-1 text-xs font-normal'>
-                                    {user.name.split(' ')[0]}
+                                    {user.firstName}
                                     <button
                                         type='button'
                                         onClick={() => removeUser(user.id)}
