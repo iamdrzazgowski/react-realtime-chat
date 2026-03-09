@@ -13,7 +13,6 @@ export function MessageBubble({
     isOwn,
     showTimestamp = true,
 }: MessageBubbleProps) {
-    console.log(isOwn);
     return (
         <div className={cn('flex', isOwn ? 'justify-end' : 'justify-start')}>
             <div

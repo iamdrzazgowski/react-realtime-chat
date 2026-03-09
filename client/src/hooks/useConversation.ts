@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     createDirectConversation as createDirectConversationAPI,
     createGroupConversation as createGroupConversationAPI,
+    deleteConversationById as deleteConversationByIdAPI,
     getConversationById,
     getConversations as getConversationsAPI,
 } from '@/services/apiConversation';
@@ -77,4 +78,22 @@ export const useGetConversationById = () => {
     });
 
     return { isLoading, isError, conversationData };
+};
+
+export const useDeleteConversationById = () => {
+    const queryClient = useQueryClient();
+
+    const { mutate: deleteConversationById, isPending } = useMutation({
+        mutationFn: (conversationId: string) =>
+            deleteConversationByIdAPI(conversationId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+            toast.success('Conversation successfully created!');
+        },
+        onError: (err) => {
+            toast.error(err.message);
+        },
+    });
+
+    return { deleteConversationById, isPending };
 };

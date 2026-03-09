@@ -38,8 +38,6 @@ export function ConversationList({
             <ConversationItem
                 key={conversation.id}
                 conversation={conversation}
-                // isActive={activeId === conversation.id}
-                // onSelect={onSelect}
                 currentUserId={user.id}
             />
         </Link>

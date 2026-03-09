@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { useDeleteConversationById } from '@/hooks/useConversation';
 
 interface ConversationActionsMenuProps {
     conversationId: string;
@@ -13,8 +14,9 @@ interface ConversationActionsMenuProps {
 }
 
 export function ConversationActionsMenu({
-    onDelete,
+    conversationId,
 }: ConversationActionsMenuProps) {
+    const { deleteConversationById } = useDeleteConversationById();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -29,7 +31,10 @@ export function ConversationActionsMenu({
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
                 <DropdownMenuItem
-                    onClick={onDelete}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        deleteConversationById(conversationId);
+                    }}
                     className='gap-2 text-sm text-destructive focus:text-destructive'>
                     <Trash2 className='h-3.5 w-3.5' />
                     Usun rozmowe

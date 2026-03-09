@@ -1,12 +1,12 @@
-import { prisma } from "../../config/prisma";
-import { ConversationRole } from "../../generated/prisma/enums";
+import { prisma } from '../../config/prisma';
+import { ConversationRole } from '../../generated/prisma/enums';
 
 export const createDirectConversation = async (
     userId: string,
     otherUserId: string,
 ) => {
     if (userId === otherUserId) {
-        throw new Error("Cannot create conversation with yourself");
+        throw new Error('Cannot create conversation with yourself');
     }
 
     const otherUser = await prisma.user.findUnique({
@@ -14,12 +14,12 @@ export const createDirectConversation = async (
     });
 
     if (!otherUser) {
-        throw new Error("User not found");
+        throw new Error('User not found');
     }
 
     const existingConversation = await prisma.conversation.findFirst({
         where: {
-            type: "DIRECT",
+            type: 'DIRECT',
             members: {
                 some: { userId },
             },
@@ -40,11 +40,11 @@ export const createDirectConversation = async (
 
     const conversation = await prisma.conversation.create({
         data: {
-            type: "DIRECT",
+            type: 'DIRECT',
             members: {
                 create: [
-                    { userId, role: "MEMBER" },
-                    { userId: otherUserId, role: "MEMBER" },
+                    { userId, role: 'MEMBER' },
+                    { userId: otherUserId, role: 'MEMBER' },
                 ],
             },
         },
@@ -82,7 +82,7 @@ export const createGroupConversation = async (
 
     const conversation = await prisma.conversation.create({
         data: {
-            type: "GROUP",
+            type: 'GROUP',
             name,
             members: {
                 create: members,
@@ -116,7 +116,7 @@ export const getUserConversations = async (userId: string) => {
                 },
             },
             messages: {
-                orderBy: { createdAt: "desc" },
+                orderBy: { createdAt: 'desc' },
                 take: 1,
                 include: {
                     sender: {
@@ -125,7 +125,7 @@ export const getUserConversations = async (userId: string) => {
                 },
             },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { updatedAt: 'desc' },
     });
 
     return conversations.map((conv) => {
@@ -134,7 +134,7 @@ export const getUserConversations = async (userId: string) => {
         const currentMember = conv.members.find((m) => m.userId === userId);
         const otherMember = conv.members.find((m) => m.userId !== userId);
 
-        if (conv.type === "DIRECT") {
+        if (conv.type === 'DIRECT') {
             return {
                 id: conv.id,
                 type: conv.type,
@@ -210,7 +210,7 @@ export const getConversationById = async (conversationId: string) => {
             },
             messages: {
                 orderBy: {
-                    createdAt: "asc",
+                    createdAt: 'asc',
                 },
                 include: {
                     sender: {
@@ -226,4 +226,42 @@ export const getConversationById = async (conversationId: string) => {
     });
 
     return conversationData;
+};
+
+export const deleteConversationById = async (
+    conversationId: string,
+    userId: string,
+) => {
+    const member = await prisma.conversationMember.findUnique({
+        where: {
+            userId_conversationId: {
+                userId,
+                conversationId,
+            },
+        },
+    });
+
+    if (!member) {
+        throw new Error('User is not a member of this conversation');
+    }
+
+    const conversation = await prisma.conversation.findUnique({
+        where: { id: conversationId },
+    });
+
+    if (!conversation) {
+        throw new Error('Conversation not found');
+    }
+
+    if (conversation.type === 'GROUP' && member.role !== 'ADMIN') {
+        throw new Error('Only admin can delete group conversation');
+    }
+
+    await prisma.conversation.delete({
+        where: {
+            id: conversationId,
+        },
+    });
+
+    return { success: true };
 };

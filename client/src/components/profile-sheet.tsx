@@ -20,6 +20,7 @@ interface ProfileSheetProps {
 }
 
 export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
+    console.log(user);
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side='left' className='w-80 p-0'>
@@ -31,7 +32,6 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
                 </SheetHeader>
 
                 <div className='flex flex-col h-full'>
-                    {/* Profile header */}
                     <div className='flex flex-col items-center gap-3 px-6 pt-10 pb-6'>
                         <div className='relative group'>
                             <Avatar className='h-20 w-20'>
@@ -53,7 +53,7 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
                             </p>
                             <Badge
                                 variant='secondary'
-                                className='mt-2 text-[10px] font-normal'>
+                                className='mt-2 text-[10px] font-normal bg-green-400'>
                                 online
                             </Badge>
                         </div>
@@ -63,11 +63,11 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
 
                     <div className='flex-1 overflow-y-auto px-2 py-2'>
                         <nav className='flex flex-col gap-0.5'>
-                            <SettingsItem
+                            {/* <SettingsItem
                                 icon={Bell}
                                 label='Powiadomienia'
                                 detail='Wlaczone'
-                            />
+                            /> */}
                             <SettingsItem
                                 icon={Moon}
                                 label='Motyw'

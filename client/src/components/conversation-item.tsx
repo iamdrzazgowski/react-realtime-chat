@@ -59,12 +59,10 @@ export function ConversationItem({
         <div className='group relative'>
             <button
                 type='button'
-                // onClick={() => onSelect(conversation.id)}
                 className={cn(
                     'flex items-center gap-3 w-full px-4 py-3 text-left transition-colors hover:bg-secondary/80',
                     isActive && 'bg-secondary',
                 )}>
-                {/* Avatar */}
                 <div className='relative shrink-0'>
                     <Avatar className='h-10 w-10'>
                         <AvatarFallback
@@ -86,7 +84,6 @@ export function ConversationItem({
                     )}
                 </div>
 
-                {/* Content */}
                 <div className='flex-1 overflow-hidden'>
                     <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-1.5 min-w-0'>
@@ -106,7 +103,7 @@ export function ConversationItem({
                         </div>
                         <span
                             className={cn(
-                                'text-[11px] shrink-0 ml-2',
+                                'text-[11px] shrink-0 ml-2 group-hover:hidden',
                                 unread
                                     ? 'text-primary font-medium'
                                     : 'text-muted-foreground',
@@ -136,7 +133,6 @@ export function ConversationItem({
                 </div>
             </button>
 
-            {/* Hover actions */}
             <div className='absolute right-3 top-1/2 -translate-y-1/2'>
                 <ConversationActionsMenu conversationId={conversation.id} />
             </div>

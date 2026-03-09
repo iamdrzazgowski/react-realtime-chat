@@ -1,11 +1,12 @@
-import { Request, Response } from "express";
-import { AuthRequest } from "../auth/auth.middleware";
+import { Request, Response } from 'express';
+import { AuthRequest } from '../auth/auth.middleware';
 import {
     createDirectConversation as createDirectConversationAPI,
     createGroupConversation as createGroupConversationAPI,
     getConversationById as getConversationByIdAPI,
+    deleteConversationById as deleteConversationByIdAPI,
     getUserConversations,
-} from "./conversation.service";
+} from './conversation.service';
 
 export const createDirectConversation = async (
     req: AuthRequest,
@@ -16,11 +17,11 @@ export const createDirectConversation = async (
         const { otherUserId } = req.body;
 
         if (!otherUserId) {
-            return res.status(400).json({ message: "otherUserId is required" });
+            return res.status(400).json({ message: 'otherUserId is required' });
         }
 
         if (!userId) {
-            return res.status(400).json({ message: "User ID is required" });
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         const conversation = await createDirectConversationAPI(
@@ -30,7 +31,7 @@ export const createDirectConversation = async (
 
         return res.status(201).json({ conversation });
     } catch (error) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -43,12 +44,12 @@ export const createGroupConversation = async (
         const { name, userIds } = req.body;
 
         if (!creatorId) {
-            return res.status(400).json({ message: "User ID is required" });
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         if (!userIds || !Array.isArray(userIds)) {
             return res.status(400).json({
-                message: "userIds must be an array",
+                message: 'userIds must be an array',
             });
         }
 
@@ -60,7 +61,7 @@ export const createGroupConversation = async (
 
         return res.status(201).json({ conversation });
     } catch (error) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -69,14 +70,14 @@ export const getConversations = async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
 
         if (!userId) {
-            return res.status(400).json({ message: "User ID is required" });
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         const conversations = await getUserConversations(userId);
 
         return res.status(200).json({ conversations });
     } catch (error) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
@@ -85,7 +86,7 @@ export const getConversationById = async (req: AuthRequest, res: Response) => {
         const userId = req.userId;
 
         if (!userId) {
-            return res.status(400).json({ message: "User ID is required" });
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         const { conversationId } = req.params;
@@ -93,7 +94,7 @@ export const getConversationById = async (req: AuthRequest, res: Response) => {
         if (!conversationId) {
             return res
                 .status(400)
-                .json({ message: "Conversation ID is required" });
+                .json({ message: 'Conversation ID is required' });
         }
 
         const conversation = await getConversationByIdAPI(
@@ -101,11 +102,45 @@ export const getConversationById = async (req: AuthRequest, res: Response) => {
         );
 
         if (!conversation) {
-            return res.status(404).json({ message: "Conversation not found" });
+            return res.status(404).json({ message: 'Conversation not found' });
         }
 
         return res.status(200).json({ conversation });
     } catch (error) {
-        return res.status(500).json({ message: "Internal Server Error" });
+        return res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+export const deleteConversationById = async (
+    req: AuthRequest,
+    res: Response,
+) => {
+    try {
+        const userId = req.userId;
+
+        if (!userId) {
+            return res.status(400).json({ messages: 'Unauthorized' });
+        }
+
+        const { conversationId } = req.params;
+
+        if (!conversationId) {
+            return res
+                .status(400)
+                .json({ message: 'Conversation ID is required' });
+        }
+
+        const conversation = await deleteConversationByIdAPI(
+            conversationId as string,
+            userId,
+        );
+
+        if (!conversation) {
+            return res.status(404).json({ message: 'Conversation not found' });
+        }
+
+        return res.status(200).json({ conversation });
+    } catch (error) {
+        return res.status(500).json({ messages: 'Internal Server Error' });
     }
 };
