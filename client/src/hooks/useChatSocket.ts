@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
+import notificationSound from '../assets/notification_sound.mp3';
 
 export function useChatSocket(
     conversationId: string | undefined,
@@ -8,6 +9,11 @@ export function useChatSocket(
 ) {
     const socketRef = useRef<Socket | null>(null);
     const queryClient = useQueryClient();
+
+    const playNotificationSound = () => {
+        const audio = new Audio(notificationSound);
+        audio.play();
+    };
 
     useEffect(() => {
         if (!conversationId || !userId) return;
@@ -19,6 +25,8 @@ export function useChatSocket(
         s.emit('join_conversation', conversationId);
 
         s.on('receive_message', (msg: any) => {
+            console.log(msg);
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
             queryClient.setQueryData(
                 ['conversation', msg.conversationId],
                 (oldData: any) => {
@@ -47,6 +55,10 @@ export function useChatSocket(
                     };
                 },
             );
+
+            if (userId !== msg.senderId) {
+                playNotificationSound();
+            }
         });
 
         return () => {
