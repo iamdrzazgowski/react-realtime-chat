@@ -12,6 +12,10 @@ API and WebSocket communication.
 
 # Screenshots
 
+## Login
+
+![Login](https://github.com/user-attachments/assets/a660dbc8-a9c5-495e-83d4-140faf15aecd)
+
 ## Direct conversation
 
 ![Direct conversation](https://github.com/user-attachments/assets/f676d238-a35a-48b3-b5a6-d44f057cdd49)
