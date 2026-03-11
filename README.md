@@ -10,6 +10,18 @@ API and WebSocket communication.
 
 ---
 
+# Screenshots
+
+## Direct conversation
+
+![Direct conversation](https://github.com/user-attachments/assets/f676d238-a35a-48b3-b5a6-d44f057cdd49)
+
+## Group conversation
+
+![Group conversation](https://github.com/user-attachments/assets/9cc9a4f7-fc0f-445d-a5ca-20a5f6508719)
+
+---
+
 # Features
 
 - User authentication with custom **JWT implementation**
