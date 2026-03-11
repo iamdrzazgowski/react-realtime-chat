@@ -83,11 +83,7 @@ Responsible for:
 - Express.js
 - Socket.IO
 - JWT (custom authentication implementation)
-
-## Database
-
 - PostgreSQL
-- Docker
 
 ---
 
