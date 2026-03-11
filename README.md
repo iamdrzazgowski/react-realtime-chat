@@ -18,11 +18,11 @@ API and WebSocket communication.
 
 ## Direct conversation
 
-![Direct conversation](https://github.com/user-attachments/assets/f676d238-a35a-48b3-b5a6-d44f057cdd49)
+![Direct conversation](https://github.com/user-attachments/assets/69dc13cd-208c-415d-a322-58d2837e3563)
 
 ## Group conversation
 
-![Group conversation](https://github.com/user-attachments/assets/9cc9a4f7-fc0f-445d-a5ca-20a5f6508719)
+![Group conversation](https://github.com/user-attachments/assets/a5ea2683-2096-4807-bac2-d2be3af8bddc)
 
 ---
 

@@ -62,7 +62,7 @@ export function ConversationList({
                         ) : (
                             <div className='py-12 text-center'>
                                 <p className='text-sm text-muted-foreground'>
-                                    Brak wyników
+                                    No results
                                 </p>
                             </div>
                         )}

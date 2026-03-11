@@ -10,12 +10,12 @@ import { MessageSquarePlus, Users } from 'lucide-react';
 const ACTIONS = [
     {
         icon: Users,
-        label: 'Utwórz grupę',
+        label: 'Create Group',
         onClick: (handlers) => handlers.onCreateGroup(),
     },
     {
         icon: MessageSquarePlus,
-        label: 'Nowa konwersacja',
+        label: 'New conversation',
         onClick: (handlers) => handlers.onCreateDirectConversation(),
     },
 ];
@@ -41,7 +41,7 @@ export function SidebarHeader({
                     </AvatarFallback>
                 </Avatar>
                 <h1 className='text-lg font-semibold text-foreground tracking-tight'>
-                    Wiadomości
+                    Messages
                 </h1>
             </button>
 

@@ -26,7 +26,7 @@ export function ConversationActionsMenu({
                     className='h-7 w-7 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-foreground'
                     onClick={(e) => e.stopPropagation()}>
                     <MoreHorizontal className='h-3.5 w-3.5' />
-                    <span className='sr-only'>Opcje konwersacji</span>
+                    <span className='sr-only'>Conversation options</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='w-48'>
@@ -37,7 +37,7 @@ export function ConversationActionsMenu({
                     }}
                     className='gap-2 text-sm text-destructive focus:text-destructive'>
                     <Trash2 className='h-3.5 w-3.5' />
-                    Usun rozmowe
+                    Delete conversation
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

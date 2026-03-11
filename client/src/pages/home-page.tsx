@@ -10,19 +10,14 @@ import { CreateGroupDialog } from '@/components/create-group-dialog';
 export default function HomePage() {
     const { user } = useUser();
 
-    // Dialog states
     const [createDirectConversation, setCreateDirectConversation] =
         useState(false);
     const [createGroupOpen, setCreateGroupOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
-    // const activeConversation =
-    //     conversations.find((c) => c.id === activeId) ?? null;
-
     return (
         <>
             <main className='flex h-dvh overflow-hidden bg-background'>
-                {/* Sidebar - conversation list */}
                 <div
                     className={cn(
                         'w-full md:w-80 lg:w-96 shrink-0 transition-transform duration-200',

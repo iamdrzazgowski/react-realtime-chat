@@ -80,15 +80,15 @@ export function CreateGroupDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className='sm:max-w-md'>
                 <DialogHeader>
-                    <DialogTitle>Utworz grupe</DialogTitle>
+                    <DialogTitle>Create a group</DialogTitle>
                     <DialogDescription>
-                        Nadaj nazwe grupie i wybierz co najmniej 2 osoby.
+                        Give your group a name and select at least 2 people.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className='flex flex-col gap-3'>
                     <Input
-                        placeholder='Nazwa grupy...'
+                        placeholder='Group name...'
                         value={groupName}
                         onChange={(e) => setGroupName(e.target.value)}
                         className='h-9 text-sm'
@@ -108,7 +108,7 @@ export function CreateGroupDialog({
                                         className='ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20 transition-colors'>
                                         <X className='h-2.5 w-2.5' />
                                         <span className='sr-only'>
-                                            Usun {user.name}
+                                            Remove {user.name}
                                         </span>
                                     </button>
                                 </Badge>
@@ -119,7 +119,7 @@ export function CreateGroupDialog({
                     <div className='relative'>
                         <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
                         <Input
-                            placeholder='Szukaj kontaktow...'
+                            placeholder='Search...'
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className='pl-8 h-9 text-sm bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary/30'
@@ -156,19 +156,11 @@ export function CreateGroupDialog({
                                                     {user.lastName[0]}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            {/* {user.online && (
-                                                <span className='absolute bottom-0 right-0 h-2 w-2 rounded-full border border-card bg-online' />
-                                            )} */}
                                         </div>
                                         <div className='flex-1'>
                                             <p className='text-sm font-medium text-foreground'>
                                                 {user.firstName} {user.lastName}
                                             </p>
-                                            {/* <p className='text-xs text-muted-foreground'>
-                                                {user.online
-                                                    ? 'online'
-                                                    : 'offline'}
-                                            </p> */}
                                         </div>
                                         <div
                                             className={cn(
@@ -205,7 +197,7 @@ export function CreateGroupDialog({
                         variant='outline'
                         onClick={() => onOpenChange(false)}
                         className='h-9 text-sm'>
-                        Anuluj
+                        Cancel
                     </Button>
                     <Button
                         onClick={handleCreate}
@@ -214,7 +206,7 @@ export function CreateGroupDialog({
                         }
                         className='h-9 text-sm gap-1.5'>
                         <Users className='h-3.5 w-3.5' />
-                        Utworz ({selected.size})
+                        Create ({selected.size})
                     </Button>
                 </DialogFooter>
             </DialogContent>

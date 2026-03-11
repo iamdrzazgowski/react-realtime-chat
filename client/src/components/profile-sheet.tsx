@@ -27,10 +27,8 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side='left' className='w-80 p-0'>
                 <SheetHeader className='sr-only'>
-                    <SheetTitle>Profil</SheetTitle>
-                    <SheetDescription>
-                        Ustawienia profilu uzytkownika
-                    </SheetDescription>
+                    <SheetTitle>Profile</SheetTitle>
+                    <SheetDescription>User profile settings</SheetDescription>
                 </SheetHeader>
 
                 <div className='flex flex-col h-full'>
@@ -67,16 +65,14 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
                         <nav className='flex flex-col gap-0.5'>
                             <SettingsItem
                                 icon={Bell}
-                                label='Powiadomienia'
-                                detail={notification ? 'Wlaczone' : 'Wyłączone'}
+                                label='Notifications'
+                                detail={notification ? 'On' : 'Off'}
                                 onClick={setNotification}
                             />
                             <SettingsItem
                                 icon={Moon}
-                                label='Ciemny Motyw'
-                                detail={
-                                    theme === 'light' ? 'Wyłączony' : 'Włączony'
-                                }
+                                label='Dark theme'
+                                detail={theme === 'light' ? 'Off' : 'On'}
                                 onClick={setTheme}
                             />
                         </nav>

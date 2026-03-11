@@ -68,11 +68,11 @@ export function formatRelativeTime(date?: Date | string | null) {
     const diffMs = now.getTime() - d.getTime();
     const diffSec = Math.floor(diffMs / 1000);
 
-    if (diffSec < 60) return `${diffSec}s temu`;
+    if (diffSec < 60) return `${diffSec}s ago`;
     const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin}m temu`;
+    if (diffMin < 60) return `${diffMin}m ago`;
     const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH}h temu`;
+    if (diffH < 24) return `${diffH}h ago`;
     const diffD = Math.floor(diffH / 24);
-    return `${diffD}d temu`;
+    return `${diffD}d ago`;
 }

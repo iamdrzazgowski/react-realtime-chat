@@ -54,16 +54,16 @@ export function DirectConversationDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className='sm:max-w-md'>
                 <DialogHeader>
-                    <DialogTitle>Nowa konwersacja</DialogTitle>
+                    <DialogTitle>New conversation</DialogTitle>
                     <DialogDescription>
-                        Wybierz osobę, z którą chcesz rozpocząć rozmowę.
+                        Select the person you want to start a conversation with.
                     </DialogDescription>
                 </DialogHeader>
 
                 <div className='relative'>
                     <Search className='absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground' />
                     <Input
-                        placeholder='Szukaj użytkownika...'
+                        placeholder='Search...'
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className='pl-8 h-9 text-sm bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary/30'
@@ -101,7 +101,7 @@ export function DirectConversationDialog({
                         {usersData.length === 0 && (
                             <div className='py-8 text-center'>
                                 <p className='text-sm text-muted-foreground'>
-                                    Nie znaleziono użytkowników
+                                    No users found
                                 </p>
                             </div>
                         )}
@@ -113,7 +113,7 @@ export function DirectConversationDialog({
                     disabled={!selectedUser || isPending}
                     className='w-full mt-2 gap-2'>
                     <MessageCircle className='h-4 w-4' />
-                    Rozpocznij rozmowę
+                    Start a conversation
                 </Button>
             </DialogContent>
         </Dialog>

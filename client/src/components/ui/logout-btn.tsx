@@ -16,7 +16,7 @@ export default function LogoutBtn() {
             variant='ghost'
             className='w-full justify-start gap-2.5 h-10 text-destructive hover:text-destructive hover:bg-destructive/10 text-sm font-normal'>
             <LogOut className='h-4 w-4' />
-            Wyloguj sie
+            Log out
         </Button>
     );
 }

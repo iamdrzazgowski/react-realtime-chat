@@ -50,7 +50,7 @@ export function MessageInput({ onSend }: MessageInputProps) {
                             value={value}
                             onChange={(e) => setValue(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder='Napisz wiadomość...'
+                            placeholder='Write a message...'
                             rows={1}
                             className='w-full resize-none overflow-hidden rounded-xl border border-input bg-secondary px-3.5 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 leading-relaxed'
                         />
@@ -62,7 +62,7 @@ export function MessageInput({ onSend }: MessageInputProps) {
                         onClick={handleSend}
                         disabled={!value.trim()}>
                         <SendHorizontal className='h-4 w-4' />
-                        <span className='sr-only'>Wyślij</span>
+                        <span className='sr-only'>Send</span>
                     </Button>
                 </div>
             </footer>
