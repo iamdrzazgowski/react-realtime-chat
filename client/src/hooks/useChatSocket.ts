@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useQueryClient } from '@tanstack/react-query';
-import notificationSound from '../assets/notification_sound.mp3';
+import { useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+import { useQueryClient } from "@tanstack/react-query";
+import notificationSound from "../assets/notification_sound.mp3";
+import { useSettings } from "@/context/settings-contex";
 
 export function useChatSocket(
     conversationId: string | undefined,
@@ -9,6 +10,7 @@ export function useChatSocket(
 ) {
     const socketRef = useRef<Socket | null>(null);
     const queryClient = useQueryClient();
+    const { notification } = useSettings();
 
     const playNotificationSound = () => {
         const audio = new Audio(notificationSound);
@@ -21,14 +23,13 @@ export function useChatSocket(
         const s: Socket = io(import.meta.env.VITE_API_URL);
         socketRef.current = s;
 
-        s.emit('user_online', userId);
-        s.emit('join_conversation', conversationId);
+        s.emit("user_online", userId);
+        s.emit("join_conversation", conversationId);
 
-        s.on('receive_message', (msg: any) => {
-            console.log(msg);
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
+        s.on("receive_message", (msg: any) => {
+            queryClient.invalidateQueries({ queryKey: ["conversations"] });
             queryClient.setQueryData(
-                ['conversation', msg.conversationId],
+                ["conversation", msg.conversationId],
                 (oldData: any) => {
                     if (!oldData) return oldData;
                     if (
@@ -56,7 +57,7 @@ export function useChatSocket(
                 },
             );
 
-            if (userId !== msg.senderId) {
+            if (userId !== msg.senderId && notification) {
                 playNotificationSound();
             }
         });
@@ -64,7 +65,7 @@ export function useChatSocket(
         return () => {
             s.disconnect();
         };
-    }, [conversationId, userId, queryClient]);
+    }, [conversationId, userId, queryClient, notification]);
 
     const sendMessage = (
         conversationId: string,
@@ -72,7 +73,7 @@ export function useChatSocket(
         content: string,
     ) => {
         if (!socketRef.current) return;
-        socketRef.current.emit('send_message', {
+        socketRef.current.emit("send_message", {
             conversationId,
             senderId: userId,
             content,

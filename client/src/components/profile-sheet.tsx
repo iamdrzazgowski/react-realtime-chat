@@ -12,6 +12,7 @@ import { Separator } from './ui/separator';
 import { Badge } from './ui/badge';
 import { Bell, Moon } from 'lucide-react';
 import LogoutBtn from './ui/logout-btn';
+import { useSettings } from '@/context/settings-contex';
 
 interface ProfileSheetProps {
     open: boolean;
@@ -20,7 +21,8 @@ interface ProfileSheetProps {
 }
 
 export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
-    console.log(user);
+    const { theme, notification, setTheme, setNotification } = useSettings();
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side='left' className='w-80 p-0'>
@@ -63,15 +65,19 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
 
                     <div className='flex-1 overflow-y-auto px-2 py-2'>
                         <nav className='flex flex-col gap-0.5'>
-                            {/* <SettingsItem
+                            <SettingsItem
                                 icon={Bell}
                                 label='Powiadomienia'
-                                detail='Wlaczone'
-                            /> */}
+                                detail={notification ? 'Wlaczone' : 'Wyłączone'}
+                                onClick={setNotification}
+                            />
                             <SettingsItem
                                 icon={Moon}
-                                label='Motyw'
-                                detail='Jasny'
+                                label='Ciemny Motyw'
+                                detail={
+                                    theme === 'light' ? 'Wyłączony' : 'Włączony'
+                                }
+                                onClick={setTheme}
                             />
                         </nav>
                     </div>
@@ -91,15 +97,18 @@ function SettingsItem({
     icon: Icon,
     label,
     detail,
+    onClick,
 }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     detail?: string;
+    onClick: () => void;
 }) {
     return (
         <button
             type='button'
-            className='flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-secondary transition-colors'>
+            onClick={() => onClick()}
+            className='flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-secondary transition-colors cursor-pointer'>
             <Icon className='h-4 w-4 text-muted-foreground shrink-0' />
             <span className='flex-1 text-sm text-foreground'>{label}</span>
             {detail && (

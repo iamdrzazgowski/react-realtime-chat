@@ -1,23 +1,23 @@
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import chatting from '@/assets/chatting.svg';
-import FormErrorLabel from './ui/form-error';
-import type { SignUpFormValues } from '@/types/form';
-import { useRegisterUser } from '@/hooks/useAuth';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import chatting from "@/assets/chatting.svg";
+import FormErrorLabel from "./ui/form-error";
+import type { SignUpFormValues } from "@/types/form";
+import { useRegisterUser } from "@/hooks/useAuth";
 
 export function SignupForm({
     className,
     ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<"div">) {
     const {
         register,
         handleSubmit,
@@ -47,39 +47,40 @@ export function SignupForm({
     };
 
     return (
-        <div className={cn('flex flex-col gap-6', className)} {...props}>
-            <Card className='overflow-hidden p-0'>
-                <CardContent className='grid p-0 md:grid-cols-2'>
+        <div className={cn("flex flex-col gap-6", className)} {...props}>
+            <Card className="overflow-hidden p-0">
+                <CardContent className="grid p-0 md:grid-cols-2">
                     <form
                         onSubmit={handleSubmit(onSubmit)}
-                        className='p-6 md:p-8'>
+                        className="p-6 md:p-8"
+                    >
                         <FieldGroup>
-                            <div className='flex flex-col items-center gap-2 text-center'>
-                                <h1 className='text-2xl font-bold'>
+                            <div className="flex flex-col items-center gap-2 text-center">
+                                <h1 className="text-2xl font-bold">
                                     Create your account
                                 </h1>
-                                <p className='text-muted-foreground text-sm text-balance'>
+                                <p className="text-muted-foreground text-sm text-balance">
                                     Enter your email below to create your
                                     account
                                 </p>
                             </div>
                             <Field>
-                                <Field className='grid grid-cols-2 gap-4'>
+                                <Field className="grid grid-cols-2 gap-4">
                                     <Field>
-                                        <FieldLabel htmlFor='firstName'>
+                                        <FieldLabel htmlFor="firstName">
                                             First Name
                                         </FieldLabel>
                                         <Input
-                                            id='firstName'
-                                            type='text'
-                                            {...register('firstName', {
+                                            id="firstName"
+                                            type="text"
+                                            {...register("firstName", {
                                                 required:
-                                                    'This field is required',
+                                                    "This field is required",
                                             })}
                                             className={`${
                                                 errors.firstName?.message
-                                                    ? 'border-red-500'
-                                                    : ''
+                                                    ? "border-red-500"
+                                                    : ""
                                             }`}
                                         />
                                         <FormErrorLabel
@@ -87,20 +88,20 @@ export function SignupForm({
                                         />
                                     </Field>
                                     <Field>
-                                        <FieldLabel htmlFor='lastName'>
+                                        <FieldLabel htmlFor="lastName">
                                             Last Name
                                         </FieldLabel>
                                         <Input
-                                            id='lastName'
-                                            type='text'
-                                            {...register('lastName', {
+                                            id="lastName"
+                                            type="text"
+                                            {...register("lastName", {
                                                 required:
-                                                    'This field is required',
+                                                    "This field is required",
                                             })}
                                             className={`${
                                                 errors.lastName?.message
-                                                    ? 'border-red-500'
-                                                    : ''
+                                                    ? "border-red-500"
+                                                    : ""
                                             }`}
                                         />
                                         <FormErrorLabel
@@ -110,49 +111,49 @@ export function SignupForm({
                                 </Field>
                             </Field>
                             <Field>
-                                <FieldLabel htmlFor='email'>Email</FieldLabel>
+                                <FieldLabel htmlFor="email">Email</FieldLabel>
                                 <Input
-                                    id='email'
-                                    type='email'
-                                    placeholder='m@example.com'
-                                    {...register('email', {
-                                        required: 'This field is required',
+                                    id="email"
+                                    type="email"
+                                    placeholder="m@example.com"
+                                    {...register("email", {
+                                        required: "This field is required",
                                         pattern: {
                                             value: /\S+@\S+\.\S+/,
                                             message:
-                                                'Please provide a valid email address',
+                                                "Please provide a valid email address",
                                         },
                                     })}
                                     className={`${
                                         errors.email?.message
-                                            ? 'border-red-500'
-                                            : ''
+                                            ? "border-red-500"
+                                            : ""
                                     }`}
                                 />
                                 <FormErrorLabel error={errors.email?.message} />
                             </Field>
                             <Field>
-                                <Field className='grid grid-cols-2 gap-4'>
+                                <Field className="grid grid-cols-2 gap-4">
                                     <Field>
-                                        <FieldLabel htmlFor='password'>
+                                        <FieldLabel htmlFor="password">
                                             Password
                                         </FieldLabel>
                                         <Input
-                                            id='password'
-                                            type='password'
-                                            {...register('password', {
+                                            id="password"
+                                            type="password"
+                                            {...register("password", {
                                                 required:
-                                                    'This field is required',
+                                                    "This field is required",
                                                 minLength: {
                                                     value: 8,
                                                     message:
-                                                        'Password needs a minimum of 8 characters',
+                                                        "Password needs a minimum of 8 characters",
                                                 },
                                             })}
                                             className={`${
                                                 errors.password?.message
-                                                    ? 'border-red-500'
-                                                    : ''
+                                                    ? "border-red-500"
+                                                    : ""
                                             }`}
                                         />
                                         <FormErrorLabel
@@ -160,24 +161,24 @@ export function SignupForm({
                                         />
                                     </Field>
                                     <Field>
-                                        <FieldLabel htmlFor='confirmPassword'>
+                                        <FieldLabel htmlFor="confirmPassword">
                                             Confirm Password
                                         </FieldLabel>
                                         <Input
-                                            id='confirmPassword'
-                                            type='password'
-                                            {...register('confirmPassword', {
+                                            id="confirmPassword"
+                                            type="password"
+                                            {...register("confirmPassword", {
                                                 required:
-                                                    'This field is required',
+                                                    "This field is required",
                                                 validate: (value) =>
                                                     value ===
                                                         getValues().password ||
-                                                    'Passwords need to match',
+                                                    "Passwords need to match",
                                             })}
                                             className={`${
                                                 errors.confirmPassword?.message
-                                                    ? 'border-red-500'
-                                                    : ''
+                                                    ? "border-red-500"
+                                                    : ""
                                             }`}
                                         />
                                         <FormErrorLabel
@@ -192,21 +193,21 @@ export function SignupForm({
                                 </FieldDescription>
                             </Field>
                             <Field>
-                                <Button type='submit' disabled={isLoading}>
+                                <Button type="submit" disabled={isLoading}>
                                     Create Account
                                 </Button>
                             </Field>
-                            <FieldDescription className='text-center'>
-                                Already have an account?{' '}
-                                <a href='/login'>Sign in</a>
+                            <FieldDescription className="text-center">
+                                Already have an account?{" "}
+                                <a href="/login">Sign in</a>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
-                    <div className='bg-muted relative hidden md:block'>
+                    <div className="bg-[oklch(0.97_0_0)] relative hidden md:block">
                         <img
                             src={chatting}
-                            alt='Image'
-                            className='absolute inset-0 h-full w-full object-contain object-center px-8 dark:brightness-[0.2] dark:grayscale'
+                            alt="Image"
+                            className="absolute inset-0 h-full w-full object-contain object-center px-8"
                         />
                     </div>
                 </CardContent>

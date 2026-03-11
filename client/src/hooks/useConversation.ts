@@ -1,13 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     createDirectConversation as createDirectConversationAPI,
     createGroupConversation as createGroupConversationAPI,
     deleteConversationById as deleteConversationByIdAPI,
     getConversationById,
     getConversations as getConversationsAPI,
-} from '@/services/apiConversation';
-import toast from 'react-hot-toast';
-import { useParams } from 'react-router';
+} from "@/services/apiConversation";
+import toast from "react-hot-toast";
+import { useParams } from "react-router";
 
 export const useCreateDirectConversation = () => {
     const queryClient = useQueryClient();
@@ -15,8 +15,8 @@ export const useCreateDirectConversation = () => {
     const { mutate: createDirectConversation, isPending } = useMutation({
         mutationFn: (userId: string) => createDirectConversationAPI(userId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            toast.success('Conversation successfully created!');
+            queryClient.invalidateQueries({ queryKey: ["conversations"] });
+            toast.success("Conversation successfully created!");
         },
         onError: (err) => {
             toast.error(err.message);
@@ -38,8 +38,8 @@ export const useCreateGroupConversation = () => {
             userIds: string[];
         }) => createGroupConversationAPI(groupName, userIds),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            toast.success('Conversation successfully created!');
+            queryClient.invalidateQueries({ queryKey: ["conversations"] });
+            toast.success("Conversation successfully created!");
         },
         onError: (err) => {
             toast.error(err.message);
@@ -55,9 +55,9 @@ export const useGetConversations = () => {
         isError,
         data: conversationsData,
     } = useQuery({
-        queryKey: ['conversations'],
+        queryKey: ["conversations"],
         queryFn: () => getConversationsAPI(),
-        staleTime: 1000 * 60,
+        refetchInterval: 60000,
     });
 
     return { isLoading, isError, conversationsData };
@@ -71,10 +71,10 @@ export const useGetConversationById = () => {
         isError,
         data: conversationData,
     } = useQuery({
-        queryKey: ['conversation', conversationID],
+        queryKey: ["conversation", conversationID],
         queryFn: () => getConversationById(conversationID as string),
         enabled: !!conversationID,
-        staleTime: 1000 * 60,
+        refetchInterval: 60000,
     });
 
     return { isLoading, isError, conversationData };
@@ -87,8 +87,8 @@ export const useDeleteConversationById = () => {
         mutationFn: (conversationId: string) =>
             deleteConversationByIdAPI(conversationId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['conversations'] });
-            toast.success('Conversation successfully created!');
+            queryClient.invalidateQueries({ queryKey: ["conversations"] });
+            toast.success("Conversation successfully created!");
         },
         onError: (err) => {
             toast.error(err.message);
