@@ -1,13 +1,13 @@
-import type { UiMessage } from '@/components/chat-area';
+import type { UiMessage } from "@/components/chat-area";
 
 export function groupMessagesByDate(messages: UiMessage[]) {
     const grouped: { date: string; messages: UiMessage[] }[] = [];
 
     for (const msg of messages) {
-        const dateStr = msg.timestamp.toLocaleDateString('pl-PL', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
+        const dateStr = msg.timestamp.toLocaleDateString("pl-PL", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
         });
         const lastGroup = grouped[grouped.length - 1];
         if (lastGroup && lastGroup.date === dateStr) {
@@ -32,7 +32,7 @@ export interface Message {
     senderId: string;
     text: string;
     timestamp: Date;
-    read: boolean;
+    read?: boolean;
     senderName?: string;
 }
 
@@ -44,25 +44,25 @@ export interface Conversation {
 }
 
 export const currentUser: User = {
-    id: 'me',
-    name: 'Ty',
-    avatar: 'T',
+    id: "me",
+    name: "Ty",
+    avatar: "T",
     online: true,
 };
 
 export function formatTime(date: Date): string {
-    return date.toLocaleTimeString('pl-PL', {
-        hour: '2-digit',
-        minute: '2-digit',
+    return date.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit",
     });
 }
 
 export function formatRelativeTime(date?: Date | string | null) {
-    if (!date) return '';
+    if (!date) return "";
 
-    const d = typeof date === 'string' ? new Date(date) : date;
+    const d = typeof date === "string" ? new Date(date) : date;
 
-    if (isNaN(d.getTime())) return '';
+    if (isNaN(d.getTime())) return "";
 
     const now = new Date();
     const diffMs = now.getTime() - d.getTime();
