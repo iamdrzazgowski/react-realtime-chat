@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+    type ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 
 interface Settings {
     theme: string;
@@ -14,7 +20,7 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
 
-function SettingsProvider({ children }) {
+function SettingsProvider({ children }: { children: ReactNode }) {
     const [settings, setSettings] = useState(() => {
         const savedSettings = localStorage.getItem("settings");
 
