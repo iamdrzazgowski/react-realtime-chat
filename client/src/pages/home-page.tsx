@@ -18,14 +18,11 @@ export default function HomePage() {
 
     return (
         <>
-            <main className="flex h-dvh overflow-hidden bg-background">
-                {/* Sidebar - conversation list */}
+            <main className="fixed inset-0 flex overflow-hidden bg-background">
                 <div
                     className={cn(
-                        "w-full md:w-80 lg:w-96 shrink-0 transition-transform duration-200",
-                        isConversationOpen
-                            ? "-translate-x-full md:translate-x-0"
-                            : "translate-x-0",
+                        "w-full md:w-80 lg:w-96 shrink-0 h-full",
+                        isConversationOpen ? "hidden md:block" : "block",
                     )}
                 >
                     <ConversationList
@@ -38,13 +35,10 @@ export default function HomePage() {
                     />
                 </div>
 
-                {/* Chat / Outlet panel */}
                 <div
                     className={cn(
-                        "absolute inset-0 md:relative md:inset-auto flex-1 transition-transform duration-200",
-                        isConversationOpen
-                            ? "translate-x-0"
-                            : "translate-x-full md:translate-x-0",
+                        "flex-1 h-full min-w-0",
+                        isConversationOpen ? "block" : "hidden md:block",
                     )}
                 >
                     <Outlet />
