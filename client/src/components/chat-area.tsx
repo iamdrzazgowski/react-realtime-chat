@@ -1,16 +1,17 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChatHeader } from './chat-header';
-import { MessageBubble } from './message-bubble';
-import { MessageInput } from './message-input';
-import { TypingIndicator } from './typing-indicator';
-import { useGetConversationById } from '@/hooks/useConversation';
-import { useUser } from '@/hooks/useAuth';
-import { ConversationSkeleton } from './conversation-skeleton';
-import { useRef, useEffect, useMemo } from 'react';
-import { useChatSocket } from '@/hooks/useChatSocket';
-import { groupMessagesByDate } from '@/lib/chat';
-import { MessageCircle } from 'lucide-react';
-import { Navigate } from 'react-router';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChatHeader } from "./chat-header";
+import { MessageBubble } from "./message-bubble";
+import { MessageInput } from "./message-input";
+import { TypingIndicator } from "./typing-indicator";
+import { useGetConversationById } from "@/hooks/useConversation";
+import { useUser } from "@/hooks/useAuth";
+import { ConversationSkeleton } from "./conversation-skeleton";
+import { useRef, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router";
+import { useChatSocket } from "@/hooks/useChatSocket";
+import { groupMessagesByDate } from "@/lib/chat";
+import { MessageCircle } from "lucide-react";
+import { Navigate } from "react-router";
 
 export interface UiMessage {
     id: string;
@@ -22,6 +23,7 @@ export interface UiMessage {
 
 export function ChatArea() {
     const bottomRef = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
     const { conversationData, isLoading, isError } = useGetConversationById();
     const conversation = conversationData?.conversation;
     const { user } = useUser();
@@ -48,20 +50,20 @@ export function ChatArea() {
 
     if (isLoading) return <ConversationSkeleton />;
 
-    if (isError) return <Navigate to='/' replace={true} />;
+    if (isError) return <Navigate to="/" replace={true} />;
 
     if (!conversation) {
         return (
-            <div className='flex h-full flex-col items-center justify-center bg-background'>
-                <div className='flex flex-col items-center gap-3 text-muted-foreground'>
-                    <div className='rounded-full bg-secondary p-4'>
-                        <MessageCircle className='h-8 w-8' />
+            <div className="flex h-full flex-col items-center justify-center bg-background">
+                <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                    <div className="rounded-full bg-secondary p-4">
+                        <MessageCircle className="h-8 w-8" />
                     </div>
-                    <div className='text-center'>
-                        <p className='text-sm font-medium text-foreground'>
+                    <div className="text-center">
+                        <p className="text-sm font-medium text-foreground">
                             Select a conversation
                         </p>
-                        <p className='text-xs text-muted-foreground mt-1'>
+                        <p className="text-xs text-muted-foreground mt-1">
                             Click on a conversation to view messages
                         </p>
                     </div>
@@ -80,39 +82,40 @@ export function ChatArea() {
     };
 
     return (
-        <div className='flex h-full'>
-            <div className='flex flex-1 flex-col bg-background'>
+        <div className="flex h-full">
+            <div className="flex flex-1 flex-col bg-background">
                 <ChatHeader
                     participant={{
                         id:
-                            conversation.type === 'GROUP'
-                                ? 'group'
-                                : (participant?.id ?? 'user'),
+                            conversation.type === "GROUP"
+                                ? "group"
+                                : (participant?.id ?? "user"),
                         name:
-                            conversation.type === 'GROUP'
-                                ? conversation.name || 'Grupa'
+                            conversation.type === "GROUP"
+                                ? conversation.name || "Grupa"
                                 : `${participant?.firstName} ${participant?.lastName}`,
                         avatar:
-                            conversation.type === 'GROUP'
+                            conversation.type === "GROUP"
                                 ? `${conversation.name?.[0]}`.toUpperCase()
                                 : `${participant.firstName?.[0]}${participant.lastName?.[0]}`.toUpperCase(),
                         online: participant?.isOnline ?? false,
                     }}
-                    onToggleInfo={() => {}}
+                    onBack={() => navigate("/")}
                 />
 
-                <ScrollArea className='flex-1 px-4'>
-                    <div className='flex flex-col gap-1.5 py-4'>
+                <ScrollArea className="flex-1 px-4">
+                    <div className="flex flex-col gap-1.5 py-4">
                         {groupedMessages.map((group) => (
                             <div
                                 key={group.date}
-                                className='flex flex-col gap-1.5'>
-                                <div className='flex items-center gap-3 py-3'>
-                                    <div className='flex-1 h-px bg-border' />
-                                    <span className='text-[11px] text-muted-foreground font-medium capitalize'>
+                                className="flex flex-col gap-1.5"
+                            >
+                                <div className="flex items-center gap-3 py-3">
+                                    <div className="flex-1 h-px bg-border" />
+                                    <span className="text-[11px] text-muted-foreground font-medium capitalize">
                                         {group.date}
                                     </span>
-                                    <div className='flex-1 h-px bg-border' />
+                                    <div className="flex-1 h-px bg-border" />
                                 </div>
 
                                 {group.messages.map((msg, index) => {
@@ -127,7 +130,8 @@ export function ChatArea() {
                                     return (
                                         <div
                                             key={msg.id}
-                                            className={showGap ? 'mt-3' : ''}>
+                                            className={showGap ? "mt-3" : ""}
+                                        >
                                             <MessageBubble
                                                 message={msg}
                                                 isOwn={isOwn}

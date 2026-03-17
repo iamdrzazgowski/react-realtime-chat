@@ -2,7 +2,6 @@ import { RouterProvider } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { router } from "./routes/router.tsx";
 import { Toaster } from "react-hot-toast";
-
 import { SettingsProvider } from "./context/settings-contex.tsx";
 
 const queryClient = new QueryClient({
