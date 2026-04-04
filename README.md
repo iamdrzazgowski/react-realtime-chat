@@ -10,7 +10,9 @@ API and WebSocket communication.
 
 ---
 
-# Screenshots
+
+![Application](https://github.com/user-attachments/assets/6ed4f456-b877-4bbf-82cb-9e73679284bd)
+<!-- # Screenshots
 
 ## Login
 
@@ -23,6 +25,8 @@ API and WebSocket communication.
 ## Group conversation
 
 ![Group conversation](https://github.com/user-attachments/assets/a5ea2683-2096-4807-bac2-d2be3af8bddc)
+
+-->
 
 ---
 
