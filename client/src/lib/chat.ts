@@ -1,14 +1,26 @@
 import type { UiMessage } from "@/components/chat-area";
 
+// Hoisted formatters: created once per module instead of per message per render.
+// (js-cache-function-results / js-hoist-regexp)
+const dateFormatter = new Intl.DateTimeFormat("pl-PL", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("pl-PL", {
+    hour: "2-digit",
+    minute: "2-digit",
+});
+
 export function groupMessagesByDate(messages: UiMessage[]) {
+    if (messages.length === 0) return [];
+
     const grouped: { date: string; messages: UiMessage[] }[] = [];
 
     for (const msg of messages) {
-        const dateStr = msg.timestamp.toLocaleDateString("pl-PL", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-        });
+        // Single pass: format once per message, compare against last group only.
+        const dateStr = dateFormatter.format(msg.timestamp);
         const lastGroup = grouped[grouped.length - 1];
         if (lastGroup && lastGroup.date === dateStr) {
             lastGroup.messages.push(msg);
@@ -43,36 +55,24 @@ export interface Conversation {
     lastMessage: Message;
 }
 
-export const currentUser: User = {
-    id: "me",
-    name: "Ty",
-    avatar: "T",
-    online: true,
-};
-
 export function formatTime(date: Date): string {
-    return date.toLocaleTimeString("pl-PL", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    return timeFormatter.format(date);
 }
+
+const MINUTE_MS = 60_000;
+const HOUR_MS = 3_600_000;
+const DAY_MS = 86_400_000;
 
 export function formatRelativeTime(date?: Date | string | null) {
     if (!date) return "";
 
-    const d = typeof date === "string" ? new Date(date) : date;
+    const time = typeof date === "string" ? Date.parse(date) : date.getTime();
+    if (Number.isNaN(time)) return "";
 
-    if (isNaN(d.getTime())) return "";
-
-    const now = new Date();
-    const diffMs = now.getTime() - d.getTime();
-    const diffSec = Math.floor(diffMs / 1000);
-
-    if (diffSec < 60) return `${diffSec}s ago`;
-    const diffMin = Math.floor(diffSec / 60);
-    if (diffMin < 60) return `${diffMin}m ago`;
-    const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH}h ago`;
-    const diffD = Math.floor(diffH / 24);
-    return `${diffD}d ago`;
+    const diffMs = Date.now() - time;
+    // Future timestamps and sub-minute diffs share the same cheap path.
+    if (diffMs < MINUTE_MS) return "now";
+    if (diffMs < HOUR_MS) return `${Math.floor(diffMs / MINUTE_MS)}m ago`;
+    if (diffMs < DAY_MS) return `${Math.floor(diffMs / HOUR_MS)}h ago`;
+    return `${Math.floor(diffMs / DAY_MS)}d ago`;
 }

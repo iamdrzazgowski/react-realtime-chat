@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ interface Action {
     onClick: (handlers: Handlers) => void;
 }
 
+// Hoisted static config (rendering-hoist-jsx): never recreated per render.
 const ACTIONS: Action[] = [
     {
         icon: Users,
@@ -42,13 +44,20 @@ const ACTIONS: Action[] = [
     },
 ];
 
-export function SidebarHeader({
+function SidebarHeaderInner({
     onCreateGroup,
     onOpenProfile,
     onCreateDirectConversation,
     user,
 }: SidebarHeaderProps) {
-    const handlers = { onCreateDirectConversation, onCreateGroup };
+    const handlers = useMemo(
+        () => ({ onCreateDirectConversation, onCreateGroup }),
+        [onCreateDirectConversation, onCreateGroup],
+    );
+
+    const initials =
+        `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`.toUpperCase() ||
+        "?";
 
     return (
         <div className="flex items-center justify-between border-b border-border px-4 py-4">
@@ -59,8 +68,7 @@ export function SidebarHeader({
             >
                 <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
-                        {user.firstName[0]}
-                        {user.lastName[0]}
+                        {initials}
                     </AvatarFallback>
                 </Avatar>
                 <h1 className="text-lg font-semibold text-foreground tracking-tight">
@@ -91,3 +99,5 @@ export function SidebarHeader({
         </div>
     );
 }
+
+export const SidebarHeader = memo(SidebarHeaderInner);

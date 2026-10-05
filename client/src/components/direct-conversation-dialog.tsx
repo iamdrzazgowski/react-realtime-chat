@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, MessageCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useUsers } from '@/hooks/useUsers';
 import { Spinner } from './ui/spinner';
 import { useCreateDirectConversation } from '@/hooks/useConversation';
@@ -26,7 +26,7 @@ export interface User {
     firstName: string;
     lastName: string;
     isOnline: boolean;
-    createdAt: Date;
+    createdAt: string;
 }
 
 export function DirectConversationDialog({
@@ -37,10 +37,17 @@ export function DirectConversationDialog({
     const { createDirectConversation, isPending } =
         useCreateDirectConversation();
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
-    const { isLoading, usersData = [] } = useUsers({
+    const { isLoading, usersData } = useUsers({
         search,
         initialLimit: 5,
     });
+
+    const users = useMemo(
+        () => usersData?.usersData ?? [],
+        [usersData],
+    );
+
+    const handleSelect = useCallback((id: string) => setSelectedUser(id), []);
 
     const handleCreate = () => {
         if (!selectedUser) return;
@@ -74,12 +81,12 @@ export function DirectConversationDialog({
                     <div className='flex flex-col gap-1'>
                         {isLoading && <Spinner />}
 
-                        {(usersData?.usersData ?? []).map((user: User) => {
+                        {users.map((user: User) => {
                             const isSelected = selectedUser === user.id;
                             return (
                                 <button
                                     key={user.id}
-                                    onClick={() => setSelectedUser(user.id)}
+                                    onClick={() => handleSelect(user.id)}
                                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors text-left ${
                                         isSelected
                                             ? 'bg-primary/10'
@@ -98,7 +105,7 @@ export function DirectConversationDialog({
                             );
                         })}
 
-                        {usersData.length === 0 && (
+                        {!isLoading && users.length === 0 && (
                             <div className='py-8 text-center'>
                                 <p className='text-sm text-muted-foreground'>
                                     No users found

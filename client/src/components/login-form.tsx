@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import FormErrorLabel from "./ui/form-error";
 import type { LoginFormValues } from "@/types/form";
 import { useLogin } from "@/hooks/useAuth";
+import { Link } from "react-router";
 
 export function LoginForm({
     className,
@@ -28,7 +29,7 @@ export function LoginForm({
     const { loginUser, isLoading } = useLogin();
 
     const onSubmit = ({ email, password }: LoginFormValues) => {
-        loginUser({ email, password }, { onSettled: () => reset() });
+        loginUser({ email, password }, { onError: () => reset() });
     };
 
     return (
@@ -100,14 +101,17 @@ export function LoginForm({
 
                             <FieldDescription className="text-center">
                                 Don&apos;t have an account?{" "}
-                                <a href="/signup">Sign up</a>
+                                <Link to="/signup">Sign up</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
                     <div className="bg-[oklch(0.97_0_0)]  relative hidden md:block">
                         <img
                             src={chatting}
-                            alt="Image"
+                            alt="Illustration of people chatting"
+                            loading="lazy"
+                            width={400}
+                            height={400}
                             className="absolute inset-0 h-full w-full object-contain object-center px-8"
                         />
                     </div>

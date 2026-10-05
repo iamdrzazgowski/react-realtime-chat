@@ -1,14 +1,15 @@
+import { memo } from "react";
 import { cn } from "@/lib/utils";
-import type { Message } from "@/lib/chat";
+import type { UiMessage } from "@/components/chat-area";
 import { formatTime } from "@/lib/chat";
 
 interface MessageBubbleProps {
-    message: Message;
+    message: UiMessage;
     isOwn: boolean;
     showTimestamp?: boolean;
 }
 
-export function MessageBubble({
+function MessageBubbleInner({
     message,
     isOwn,
     showTimestamp = true,
@@ -17,7 +18,7 @@ export function MessageBubble({
         <div className={cn("flex", isOwn ? "justify-end" : "justify-start")}>
             <div
                 className={cn(
-                    "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
+                    "max-w-[75%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed break-words",
                     isOwn
                         ? "bg-message-own text-message-own-foreground rounded-br-md"
                         : "bg-message-other text-message-other-foreground rounded-bl-md",
@@ -25,26 +26,13 @@ export function MessageBubble({
             >
                 {!isOwn && message?.senderName && (
                     <p className="text-[11px] font-medium mb-0.5 opacity-70">
-                        {message?.senderName}
+                        {message.senderName}
                     </p>
                 )}
 
-                <p
-                    className={cn(
-                        "px-3 py-2 rounded-2xl text-sm leading-relaxed",
-                        isOwn
-                            ? "bg-blue-500 text-white dark:bg-blue-600"
-                            : "bg-secondary text-secondary-foreground",
-                    )}
-                    style={{
-                        width: "fit-content",
-                        wordBreak: "break-word",
-                    }}
-                >
-                    {message.text}
-                </p>
+                <p className="text-sm leading-relaxed">{message.text}</p>
 
-                {showTimestamp && (
+                {showTimestamp ? (
                     <div
                         className={cn(
                             "flex items-center justify-end gap-1 mt-1",
@@ -57,8 +45,12 @@ export function MessageBubble({
                             {formatTime(message.timestamp)}
                         </span>
                     </div>
-                )}
+                ) : null}
             </div>
         </div>
     );
 }
+
+// Memoized bubble (rerender-memo): appending one message no longer
+// rerenders every previous bubble.
+export const MessageBubble = memo(MessageBubbleInner);

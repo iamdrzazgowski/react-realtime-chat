@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const hints = [
@@ -8,19 +8,28 @@ const hints = [
     "Every conversation is saved automatically",
 ];
 
-export default function ConversationPlaceholder() {
+const ROTATE_MS = 3500;
+const FADE_MS = 400;
+
+function ConversationPlaceholderInner() {
     const [hintIndex, setHintIndex] = useState(0);
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout>;
         const interval = setInterval(() => {
+            // Skip rotation when the tab is hidden: avoids wasted renders.
+            if (document.visibilityState === "hidden") return;
             setVisible(false);
-            setTimeout(() => {
+            timeout = setTimeout(() => {
                 setHintIndex((i) => (i + 1) % hints.length);
                 setVisible(true);
-            }, 400);
-        }, 3500);
-        return () => clearInterval(interval);
+            }, FADE_MS);
+        }, ROTATE_MS);
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        };
     }, []);
 
     return (
@@ -52,32 +61,27 @@ export default function ConversationPlaceholder() {
 
                 <div className="flex items-center gap-2 mt-2">
                     <span
-                        className="text-xs text-muted-foreground transition-all duration-300"
-                        style={{
-                            opacity: visible ? 1 : 0,
-                            transform: visible
-                                ? "translateY(0)"
-                                : "translateY(4px)",
-                        }}
+                        className={cn(
+                            "text-xs text-muted-foreground transition-all duration-300",
+                            visible
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 translate-y-1",
+                        )}
                     >
                         {hints[hintIndex]}
                     </span>
                 </div>
 
                 <div className="flex items-center gap-1.5 mt-1">
-                    {hints.map((_, i) => (
+                    {hints.map((hint, i) => (
                         <span
-                            key={i}
+                            key={hint}
                             className={cn(
-                                "rounded-full transition-all duration-300",
+                                "rounded-full transition-all duration-300 h-1.5",
                                 i === hintIndex
-                                    ? "bg-muted-foreground"
-                                    : "bg-border",
+                                    ? "bg-muted-foreground w-4"
+                                    : "bg-border w-1.5",
                             )}
-                            style={{
-                                width: i === hintIndex ? 16 : 6,
-                                height: 6,
-                            }}
                         />
                     ))}
                 </div>
@@ -85,3 +89,7 @@ export default function ConversationPlaceholder() {
         </div>
     );
 }
+
+const ConversationPlaceholder = memo(ConversationPlaceholderInner);
+
+export default ConversationPlaceholder;

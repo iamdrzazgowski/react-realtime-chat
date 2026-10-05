@@ -7,7 +7,10 @@ import { SettingsProvider } from "./context/settings-contex.tsx";
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 0,
+            staleTime: 60 * 1000,
+            gcTime: 5 * 60 * 1000,
+            refetchOnWindowFocus: false,
+            retry: 1,
         },
     },
 });

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
@@ -6,10 +7,7 @@ interface ConversationSearchProps {
     onChange: (value: string) => void;
 }
 
-export function ConversationSearch({
-    value,
-    onChange,
-}: ConversationSearchProps) {
+function ConversationSearchInner({ value, onChange }: ConversationSearchProps) {
     return (
         <div className="px-3 py-2">
             <div className="relative">
@@ -24,3 +22,5 @@ export function ConversationSearch({
         </div>
     );
 }
+
+export const ConversationSearch = memo(ConversationSearchInner);

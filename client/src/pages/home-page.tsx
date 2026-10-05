@@ -1,20 +1,45 @@
 import { ConversationList } from "@/components/conversation-list";
-import { useState } from "react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
-import { ProfileSheet } from "@/components/profile-sheet";
 import { useUser } from "@/hooks/useAuth";
 import { Outlet, useMatch } from "react-router";
-import { DirectConversationDialog } from "@/components/direct-conversation-dialog";
-import { CreateGroupDialog } from "@/components/create-group-dialog";
+import LoadingPage from "./loading-page";
+
+const DirectConversationDialog = lazy(() =>
+    import("@/components/direct-conversation-dialog").then((m) => ({
+        default: m.DirectConversationDialog,
+    })),
+);
+const CreateGroupDialog = lazy(() =>
+    import("@/components/create-group-dialog").then((m) => ({
+        default: m.CreateGroupDialog,
+    })),
+);
+const ProfileSheet = lazy(() =>
+    import("@/components/profile-sheet").then((m) => ({
+        default: m.ProfileSheet,
+    })),
+);
 
 export default function HomePage() {
-    const { user } = useUser();
+    const { user, isLoading } = useUser();
     const isConversationOpen = useMatch("/conversation/:conversationID");
 
     const [createDirectConversation, setCreateDirectConversation] =
         useState(false);
     const [createGroupOpen, setCreateGroupOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+
+    const openDirect = useCallback(
+        () => setCreateDirectConversation(true),
+        [],
+    );
+    const openGroup = useCallback(() => setCreateGroupOpen(true), []);
+    const openProfile = useCallback(() => setProfileOpen(true), []);
+
+    // Wait for the single cached user query instead of rendering
+    // children with an undefined user (js-early-exit).
+    if (isLoading || !user) return <LoadingPage />;
 
     return (
         <>
@@ -26,11 +51,9 @@ export default function HomePage() {
                     )}
                 >
                     <ConversationList
-                        onCreateDirectConversation={() =>
-                            setCreateDirectConversation(true)
-                        }
-                        onCreateGroup={() => setCreateGroupOpen(true)}
-                        onOpenProfile={() => setProfileOpen(true)}
+                        onCreateDirectConversation={openDirect}
+                        onCreateGroup={openGroup}
+                        onOpenProfile={openProfile}
                         user={user}
                     />
                 </div>
@@ -45,20 +68,27 @@ export default function HomePage() {
                 </div>
             </main>
 
-            <DirectConversationDialog
-                open={createDirectConversation}
-                onOpenChange={setCreateDirectConversation}
-            />
-            <CreateGroupDialog
-                open={createGroupOpen}
-                onOpenChange={setCreateGroupOpen}
-            />
-
-            <ProfileSheet
-                open={profileOpen}
-                onOpenChange={setProfileOpen}
-                user={user}
-            />
+            <Suspense fallback={null}>
+                {createDirectConversation ? (
+                    <DirectConversationDialog
+                        open={createDirectConversation}
+                        onOpenChange={setCreateDirectConversation}
+                    />
+                ) : null}
+                {createGroupOpen ? (
+                    <CreateGroupDialog
+                        open={createGroupOpen}
+                        onOpenChange={setCreateGroupOpen}
+                    />
+                ) : null}
+                {profileOpen ? (
+                    <ProfileSheet
+                        open={profileOpen}
+                        onOpenChange={setProfileOpen}
+                        user={user}
+                    />
+                ) : null}
+            </Suspense>
         </>
     );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import {
     Sheet,
@@ -17,11 +17,19 @@ import { useSettings } from '@/context/settings-contex';
 interface ProfileSheetProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    user: any;
+    user: {
+        firstName?: string;
+        lastName?: string;
+    };
 }
 
-export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
+function ProfileSheetInner({ open, onOpenChange, user }: ProfileSheetProps) {
     const { theme, notification, setTheme, setNotification } = useSettings();
+
+    const firstName = user?.firstName ?? '';
+    const lastName = user?.lastName ?? '';
+    const initials =
+        `${firstName[0] ?? ''}${lastName[0] ?? ''}`.toUpperCase() || '?';
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -36,20 +44,19 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
                         <div className='relative group'>
                             <Avatar className='h-20 w-20'>
                                 <AvatarFallback className='bg-primary text-primary-foreground text-2xl font-semibold'>
-                                    {user.firstName[0]}
-                                    {user.lastName[0]}
+                                    {initials}
                                 </AvatarFallback>
                             </Avatar>
                         </div>
                         <div className='text-center'>
                             <div className='flex items-center gap-1.5'>
                                 <h2 className='text-base font-semibold text-foreground'>
-                                    {user.firstName} {user.lastName}
+                                    {firstName} {lastName}
                                 </h2>
                             </div>
                             <p className='text-xs text-muted-foreground mt-0.5'>
-                                @{user.firstName.toLowerCase()}
-                                {user.lastName.toLowerCase()}
+                                @{firstName.toLowerCase()}
+                                {lastName.toLowerCase()}
                             </p>
                             <Badge
                                 variant='secondary'
@@ -89,6 +96,8 @@ export function ProfileSheet({ open, onOpenChange, user }: ProfileSheetProps) {
     );
 }
 
+// Hoisted out of the sheet render path (rerender-no-inline-components):
+// defining it at module level keeps its identity stable across opens.
 function SettingsItem({
     icon: Icon,
     label,
@@ -103,13 +112,15 @@ function SettingsItem({
     return (
         <button
             type='button'
-            onClick={() => onClick()}
+            onClick={onClick}
             className='flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-left hover:bg-secondary transition-colors cursor-pointer'>
             <Icon className='h-4 w-4 text-muted-foreground shrink-0' />
             <span className='flex-1 text-sm text-foreground'>{label}</span>
-            {detail && (
+            {detail ? (
                 <span className='text-xs text-muted-foreground'>{detail}</span>
-            )}
+            ) : null}
         </button>
     );
 }
+
+export const ProfileSheet = memo(ProfileSheetInner);

@@ -1,46 +1,29 @@
 import type { LoginFormValues, SignUpFormValues } from '@/types/form';
+import type { AuthTokenResponse, AuthUser } from '@/types/api';
+import { authFetch } from '@/lib/fetcher';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
-export const getUser = async () => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/auth/user`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error('Unauthorized');
-
-    return res.json();
+export const getUser = async (signal?: AbortSignal): Promise<AuthUser> => {
+    return authFetch<AuthUser>(`/api/auth/user`, {}, signal);
 };
 
-export const loginUser = async (data: LoginFormValues) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
+export const loginUser = async (
+    data: LoginFormValues,
+): Promise<AuthTokenResponse> => {
+    return authFetch<AuthTokenResponse>(`/api/auth/login`, {
+        requireAuth: false,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
-
-    if (!res.ok) throw new Error('Login failed');
-
-    return res.json();
 };
 
-export const registerUser = async (data: SignUpFormValues) => {
-    const res = await fetch(`${API_URL}/api/auth/signup`, {
+export const registerUser = async (
+    data: SignUpFormValues,
+): Promise<AuthTokenResponse> => {
+    return authFetch<AuthTokenResponse>(`/api/auth/signup`, {
+        requireAuth: false,
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
-
-    if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || 'Register failed!');
-    }
-
-    return res.json();
 };

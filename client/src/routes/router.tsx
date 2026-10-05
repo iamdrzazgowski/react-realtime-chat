@@ -1,32 +1,45 @@
+import { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router';
-import HomePage from '@/pages/home-page';
-import LoginPage from '@/pages/login-page';
-import PageNotFound from '@/pages/page-not-found';
-import SignupPage from '@/pages/signup-page';
 import ProtectedRoute from './protected-route';
-import ConversationPlaceholder from '@/components/conversation-placeholder';
-import { ChatArea } from '@/components/chat-area';
+import LoadingPage from '@/pages/loading-page';
+
+// Route-level code splitting (bundle-dynamic-imports, bundle-conditional):
+// each page + chat view loads only when its route is visited.
+const HomePage = lazy(() => import('@/pages/home-page'));
+const LoginPage = lazy(() => import('@/pages/login-page'));
+const SignupPage = lazy(() => import('@/pages/signup-page'));
+const PageNotFound = lazy(() => import('@/pages/page-not-found'));
+const ConversationPlaceholder = lazy(
+    () => import('@/components/conversation-placeholder'),
+);
+const ChatArea = lazy(() =>
+    import('@/components/chat-area').then((m) => ({ default: m.ChatArea })),
+);
+
+function withSuspense(element: React.ReactNode) {
+    return <Suspense fallback={<LoadingPage />}>{element}</Suspense>;
+}
 
 export const router = createBrowserRouter([
-    { path: '/login', element: <LoginPage /> },
-    { path: '/signup', element: <SignupPage /> },
+    { path: '/login', element: withSuspense(<LoginPage />) },
+    { path: '/signup', element: withSuspense(<SignupPage />) },
     {
         path: '/',
         element: (
             <ProtectedRoute>
-                <HomePage />
+                {withSuspense(<HomePage />)}
             </ProtectedRoute>
         ),
         children: [
             {
                 index: true,
-                element: <ConversationPlaceholder />,
+                element: withSuspense(<ConversationPlaceholder />),
             },
             {
                 path: 'conversation/:conversationID',
-                element: <ChatArea />,
+                element: withSuspense(<ChatArea />),
             },
         ],
     },
-    { path: '*', element: <PageNotFound /> },
+    { path: '*', element: withSuspense(<PageNotFound />) },
 ]);

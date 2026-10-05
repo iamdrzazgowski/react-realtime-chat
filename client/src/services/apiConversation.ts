@@ -1,111 +1,55 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { authFetch } from '@/lib/fetcher';
+import type {
+    ConversationDetailsResponse,
+    ConversationsResponse,
+} from '@/types/api';
 
-export const createDirectConversation = async (otherUserId: string) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/conversation/direct`, {
+export const createDirectConversation = async (
+    otherUserId: string,
+): Promise<ConversationDetailsResponse> => {
+    return authFetch<ConversationDetailsResponse>(`/api/conversation/direct`, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otherUserId }),
     });
-
-    if (!res.ok) {
-        throw new Error('Unauthorized');
-    }
-
-    return res.json();
 };
 
 export const createGroupConversation = async (
     name: string,
     userIds: string[],
-) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/conversation/group`, {
+): Promise<ConversationDetailsResponse> => {
+    return authFetch<ConversationDetailsResponse>(`/api/conversation/group`, {
         method: 'POST',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, userIds }),
     });
-
-    if (!res.ok) {
-        throw new Error('Problem with create group');
-    }
-
-    return res.json();
 };
 
-export const getConversations = async () => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/conversation/allConversations`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch user conversations');
-    }
-
-    return res.json();
+export const getConversations = async (
+    signal?: AbortSignal,
+): Promise<ConversationsResponse> => {
+    return authFetch<ConversationsResponse>(
+        `/api/conversation/allConversations`,
+        {},
+        signal,
+    );
 };
 
-export const getConversationById = async (conversationId: string) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/conversation/${conversationId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (!res.ok) {
-        throw new Error('Failed to fetch user conversations');
-    }
-
-    return res.json();
+export const getConversationById = async (
+    conversationId: string,
+    signal?: AbortSignal,
+): Promise<ConversationDetailsResponse> => {
+    return authFetch<ConversationDetailsResponse>(
+        `/api/conversation/${conversationId}`,
+        {},
+        signal,
+    );
 };
 
-export const deleteConversationById = async (conversationId: string) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
-    const res = await fetch(`${API_URL}/api/conversation/${conversationId}`, {
+export const deleteConversationById = async (
+    conversationId: string,
+): Promise<{ success: boolean }> => {
+    return authFetch<{ success: boolean }>(`/api/conversation/${conversationId}`, {
         method: 'DELETE',
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
     });
-
-    if (!res.ok) {
-        throw new Error('Failed to delete conversation');
-    }
-
-    return res.json();
 };

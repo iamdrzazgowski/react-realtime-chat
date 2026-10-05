@@ -1,17 +1,19 @@
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "./chat-header";
 import { MessageBubble } from "./message-bubble";
-import { MessageInput } from "./message-input";
-import { TypingIndicator } from "./typing-indicator";
 import { useGetConversationById } from "@/hooks/useConversation";
 import { useUser } from "@/hooks/useAuth";
 import { ConversationSkeleton } from "./conversation-skeleton";
-import { useRef, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { groupMessagesByDate } from "@/lib/chat";
 import { MessageCircle } from "lucide-react";
 import { Navigate } from "react-router";
+
+const MessageInput = lazy(() =>
+    import("./message-input").then((m) => ({ default: m.MessageInput })),
+);
 
 export interface UiMessage {
     id: string;
@@ -21,18 +23,23 @@ export interface UiMessage {
     senderName: string;
 }
 
+const EMPTY_CONVERSATION_TITLE = "Select a conversation";
+
 export function ChatArea() {
     const bottomRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { conversationData, isLoading, isError } = useGetConversationById();
     const conversation = conversationData?.conversation;
     const { user } = useUser();
 
-    const { sendMessage } = useChatSocket(conversation?.id, user.id);
+    // Cheap guards first: hooks that need ids receive undefined until loaded
+    // instead of crashing on user.id (js-early-exit).
+    const { sendMessage } = useChatSocket(conversation?.id, user?.id);
 
     const messages: UiMessage[] = useMemo(
         () =>
-            conversation?.messages?.map((msg: any) => ({
+            conversation?.messages?.map((msg) => ({
                 id: msg.id,
                 senderId: msg.sender.id,
                 text: msg.content,
@@ -42,11 +49,59 @@ export function ChatArea() {
         [conversation?.messages],
     );
 
-    const groupedMessages = groupMessagesByDate(messages);
+    // Memoized grouping (rerender-memo): toLocaleDateString no longer runs
+    // for every message on every parent render.
+    const groupedMessages = useMemo(() => groupMessagesByDate(messages), [messages]);
 
+    const messageCount = messages.length;
+    const lastMessageId = messages[messageCount - 1]?.id;
+
+    // Scroll only when a new message arrives, and batch the DOM write.
     useEffect(() => {
-        bottomRef.current?.scrollIntoView();
-    }, [messages]);
+        if (messageCount === 0) return;
+        const node = bottomRef.current;
+        if (!node) return;
+        const frame = requestAnimationFrame(() => {
+            node.scrollIntoView({ block: "end" });
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [messageCount, lastMessageId]);
+
+    const participant = useMemo(() => {
+        if (!conversation || !user) return null;
+        const members = conversation.members?.map((m) => m.user) ?? [];
+        return members.find((u) => u.id !== user.id) ?? null;
+    }, [conversation, user]);
+
+    const headerParticipant = useMemo(() => {
+        if (!conversation) return null;
+        if (conversation.type === "GROUP") {
+            return {
+                id: "group",
+                name: conversation.name || "Grupa",
+                avatar: `${conversation.name?.[0] ?? "G"}`.toUpperCase(),
+                online: false,
+            };
+        }
+        return {
+            id: participant?.id ?? "user",
+            name: `${participant?.firstName ?? ""} ${participant?.lastName ?? ""}`.trim() || "Unknown User",
+            avatar:
+                `${participant?.firstName?.[0] ?? ""}${participant?.lastName?.[0] ?? ""}`.toUpperCase() ||
+                "?",
+            online: participant?.isOnline ?? false,
+        };
+    }, [conversation, participant]);
+
+    const handleSendMessage = useCallback(
+        (text: string) => {
+            if (!conversation || !user || !text.trim()) return;
+            sendMessage(conversation.id, user.id, text.trim());
+        },
+        [conversation, user, sendMessage],
+    );
+
+    const handleBack = useCallback(() => navigate("/"), [navigate]);
 
     if (isLoading) return <ConversationSkeleton />;
 
@@ -61,7 +116,7 @@ export function ChatArea() {
                     </div>
                     <div className="text-center">
                         <p className="text-sm font-medium text-foreground">
-                            Select a conversation
+                            {EMPTY_CONVERSATION_TITLE}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                             Click on a conversation to view messages
@@ -72,39 +127,18 @@ export function ChatArea() {
         );
     }
 
-    const participant = conversation.members
-        ?.map((m: any) => m.user)
-        .find((u: any) => u.id !== user.id);
-
-    const handleSendMessage = (text: string) => {
-        if (!conversation || !text.trim()) return;
-        sendMessage(conversation.id, user.id, text.trim());
-    };
+    if (!user || !headerParticipant) return <ConversationSkeleton />;
 
     return (
         <div className="flex h-full">
             <div className="flex flex-1 flex-col bg-background">
                 <ChatHeader
-                    participant={{
-                        id:
-                            conversation.type === "GROUP"
-                                ? "group"
-                                : (participant?.id ?? "user"),
-                        name:
-                            conversation.type === "GROUP"
-                                ? conversation.name || "Grupa"
-                                : `${participant?.firstName} ${participant?.lastName}`,
-                        avatar:
-                            conversation.type === "GROUP"
-                                ? `${conversation.name?.[0]}`.toUpperCase()
-                                : `${participant.firstName?.[0]}${participant.lastName?.[0]}`.toUpperCase(),
-                        online: participant?.isOnline ?? false,
-                    }}
-                    onBack={() => navigate("/")}
+                    participant={headerParticipant}
+                    onBack={handleBack}
                 />
 
                 <ScrollArea className="flex-1 px-4">
-                    <div className="flex flex-col gap-1.5 py-4">
+                    <div ref={scrollContainerRef} className="flex flex-col gap-1.5 py-4">
                         {groupedMessages.map((group) => (
                             <div
                                 key={group.date}
@@ -125,7 +159,7 @@ export function ChatArea() {
                                             ? group.messages[index - 1]
                                             : null;
                                     const showGap =
-                                        prevMsg &&
+                                        !!prevMsg &&
                                         prevMsg.senderId !== msg.senderId;
                                     return (
                                         <div
@@ -141,15 +175,13 @@ export function ChatArea() {
                                 })}
                             </div>
                         ))}
-                        <TypingIndicator
-                            name={participant?.firstName}
-                            visible={false}
-                        />
                         <div ref={bottomRef} />
                     </div>
                 </ScrollArea>
 
-                <MessageInput onSend={handleSendMessage} />
+                <Suspense fallback={null}>
+                    <MessageInput onSend={handleSendMessage} />
+                </Suspense>
             </div>
         </div>
     );

@@ -1,8 +1,8 @@
+import { memo, useMemo } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "../lib/chat";
 import { ConversationActionsMenu } from "./conversation-actions-menu";
-import { useParams } from "react-router";
 
 interface ConversationItemProps {
     conversation: {
@@ -24,36 +24,69 @@ interface ConversationItemProps {
         lastReadAt?: string | Date | null;
     };
     currentUserId: string;
+    isActive: boolean;
 }
 
-export function ConversationItem({
+function ConversationItemInner({
     conversation,
     currentUserId,
+    isActive,
 }: ConversationItemProps) {
-    const { conversationID } = useParams();
-
-    const isActive = conversationID === conversation.id;
-
-    const participant =
-        conversation.type === "DIRECT"
-            ? (conversation.user ?? null)
-            : (conversation.name ?? null);
+    // Derive everything during render from props (rerender-derived-state-no-effect):
+    // no per-row useParams subscription, no effects.
+    const participant = useMemo(
+        () =>
+            conversation.type === "DIRECT"
+                ? (conversation.user ?? null)
+                : (conversation.name ?? null),
+        [conversation.type, conversation.user, conversation.name],
+    );
 
     const lastMsg = conversation.lastMessage ?? null;
 
-    const rawLastMsgDate = lastMsg?.createdAt ?? lastMsg?.timestamp ?? null;
+    const { lastMsgDate, unread, timeLabel } = useMemo(() => {
+        if (!lastMsg) return { lastMsgDate: null, unread: false, timeLabel: "" };
+        const raw = lastMsg.createdAt ?? lastMsg.timestamp ?? null;
+        const parsed = raw ? new Date(raw) : null;
+        if (!parsed || Number.isNaN(parsed.getTime())) {
+            return { lastMsgDate: null, unread: false, timeLabel: "" };
+        }
+        const lastRead = conversation.lastReadAt
+            ? new Date(conversation.lastReadAt)
+            : null;
+        const isUnread =
+            lastMsg.senderId !== currentUserId &&
+            (!lastRead || Number.isNaN(lastRead.getTime()) || parsed > lastRead);
+        return {
+            lastMsgDate: parsed,
+            unread: isUnread,
+            timeLabel: formatRelativeTime(parsed),
+        };
+    }, [lastMsg, conversation.lastReadAt, currentUserId]);
 
-    const lastMsgDate = rawLastMsgDate ? new Date(rawLastMsgDate) : null;
+    void lastMsgDate;
 
-    const lastReadDate = conversation.lastReadAt
-        ? new Date(conversation.lastReadAt)
-        : null;
+    const initials = useMemo(() => {
+        if (typeof participant === "string") {
+            return participant[0]?.toUpperCase() ?? "?";
+        }
+        if (participant) {
+            return (
+                `${participant.firstName?.[0] ?? ""}${participant.lastName?.[0] ?? ""}`.toUpperCase() ||
+                "?"
+            );
+        }
+        return "?";
+    }, [participant]);
 
-    const unread =
-        !!lastMsg &&
-        !!lastMsgDate &&
-        lastMsg.senderId !== currentUserId &&
-        (!lastReadDate || lastMsgDate > lastReadDate);
+    const displayName = useMemo(() => {
+        if (typeof participant === "string") return participant;
+        if (participant) return `${participant.firstName} ${participant.lastName}`;
+        return "Unknown User";
+    }, [participant]);
+
+    const isOnline =
+        typeof participant !== "string" && !!participant?.isOnline;
 
     return (
         <div className="group relative">
@@ -74,17 +107,12 @@ export function ConversationItem({
                                     : "bg-muted text-muted-foreground",
                             )}
                         >
-                            {typeof participant === "string"
-                                ? participant[0]?.toUpperCase()
-                                : participant
-                                  ? `${participant.firstName?.[0] ?? ""}${participant.lastName?.[0] ?? ""}`.toUpperCase()
-                                  : "?"}
+                            {initials}
                         </AvatarFallback>
                     </Avatar>
-                    {typeof participant !== "string" &&
-                        participant?.isOnline && (
-                            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card bg-online bg-green-400" />
-                        )}
+                    {isOnline && (
+                        <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-card bg-green-400" />
+                    )}
                 </div>
 
                 <div className="flex-1 overflow-hidden">
@@ -98,11 +126,7 @@ export function ConversationItem({
                                         : "font-medium text-foreground",
                                 )}
                             >
-                                {typeof participant === "string"
-                                    ? participant
-                                    : participant
-                                      ? `${participant.firstName} ${participant.lastName}`
-                                      : "Unknown User"}
+                                {displayName}
                             </span>
                         </div>
                         <span
@@ -113,11 +137,7 @@ export function ConversationItem({
                                     : "text-muted-foreground",
                             )}
                         >
-                            {lastMsg
-                                ? formatRelativeTime(
-                                      lastMsg.createdAt ?? lastMsg.timestamp,
-                                  )
-                                : ""}
+                            {timeLabel}
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -145,3 +165,7 @@ export function ConversationItem({
         </div>
     );
 }
+
+// Memoized row (rerender-memo): list filtering by search no longer
+// rerenders every row whose props are unchanged.
+export const ConversationItem = memo(ConversationItemInner);

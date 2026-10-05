@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Users, X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useUsers } from "@/hooks/useUsers";
 import type { User } from "./direct-conversation-dialog";
@@ -38,7 +38,7 @@ export function CreateGroupDialog({
         initialLimit: 5,
     });
 
-    const toggleUser = (id: string) => {
+    const toggleUser = useCallback((id: string) => {
         setSelected((prev) => {
             const next = new Set(prev);
             if (next.has(id)) {
@@ -48,32 +48,39 @@ export function CreateGroupDialog({
             }
             return next;
         });
-    };
+    }, []);
 
-    const removeUser = (id: string) => {
+    const removeUser = useCallback((id: string) => {
         setSelected((prev) => {
+            if (!prev.has(id)) return prev;
             const next = new Set(prev);
             next.delete(id);
             return next;
         });
-    };
+    }, []);
 
-    const selectedUsers = (usersData?.usersData ?? []).filter((u: User) =>
-        selected.has(u.id),
+    const allUsers = useMemo(
+        () => usersData?.usersData ?? [],
+        [usersData],
     );
 
+    const selectedUsers = useMemo(
+        () => allUsers.filter((u: User) => selected.has(u.id)),
+        [allUsers, selected],
+    );
+
+    const canCreate = groupName.trim().length > 0 && selected.size >= 2;
+
     const handleCreate = () => {
-        console.log(selected);
-        if (groupName.trim() && selected.size >= 2) {
-            createGroupConversation({
-                groupName,
-                userIds: Array.from(selected),
-            });
-            onOpenChange(false);
-            setGroupName("");
-            setSelected(new Set());
-            setSearch("");
-        }
+        if (!canCreate || isPending) return;
+        createGroupConversation({
+            groupName: groupName.trim(),
+            userIds: Array.from(selected),
+        });
+        onOpenChange(false);
+        setGroupName("");
+        setSelected(new Set());
+        setSearch("");
     };
 
     return (
@@ -132,7 +139,7 @@ export function CreateGroupDialog({
                         <div className="flex flex-col gap-0.5">
                             {isLoading && <Spinner />}
 
-                            {(usersData?.usersData ?? []).map((user: User) => {
+                            {allUsers.map((user: User) => {
                                 const isSelected = selected.has(user.id);
                                 return (
                                     <button
@@ -208,9 +215,7 @@ export function CreateGroupDialog({
                     </Button>
                     <Button
                         onClick={handleCreate}
-                        disabled={
-                            !groupName.trim() || selected.size < 2 || isPending
-                        }
+                        disabled={!canCreate || isPending}
                         className="h-9 text-sm gap-1.5"
                     >
                         <Users className="h-3.5 w-3.5" />

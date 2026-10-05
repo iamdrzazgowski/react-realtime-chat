@@ -1,5 +1,5 @@
 import { getUsers } from '@/services/apiUsers';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
 interface UseUsersParams {
@@ -28,9 +28,16 @@ export const useUsers = ({
         isError,
         data: usersData,
     } = useQuery({
-        queryKey: ['users', debouncedSearch],
-        queryFn: () =>
-            getUsers({ search: debouncedSearch, limit: initialLimit }),
+        queryKey: ['users', debouncedSearch, initialLimit],
+        queryFn: ({ signal }) =>
+            getUsers(
+                { search: debouncedSearch, limit: initialLimit },
+                signal,
+            ),
+        // Keep previous list visible while the debounced query refetches
+        // instead of flashing a spinner on every keystroke.
+        placeholderData: keepPreviousData,
+        staleTime: 30 * 1000,
     });
 
     return { isLoading, isError, usersData };

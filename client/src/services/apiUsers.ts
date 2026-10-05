@@ -1,32 +1,29 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { authFetch } from '@/lib/fetcher';
+import type { UsersResponse } from '@/types/api';
 
 interface FetchUsersParams {
     search?: string;
     limit?: number;
 }
 
-export const getUsers = async ({ search, limit }: FetchUsersParams) => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        throw new Error('No token found!');
-    }
-
+export const getUsers = async (
+    { search, limit }: FetchUsersParams,
+    signal?: AbortSignal,
+): Promise<UsersResponse> => {
     const params = new URLSearchParams();
 
-    if (search?.trim() === '') {
-        if (typeof limit === 'number') {
-            params.append('limit', limit.toString());
-        }
-    } else if (search) {
-        params.append('search', search);
+    // Always send limit; only add search when non-empty.
+    if (typeof limit === 'number') {
+        params.append('limit', limit.toString());
+    }
+    if (search && search.trim() !== '') {
+        params.append('search', search.trim());
     }
 
-    const res = await fetch(`${API_URL}/api/users?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error('Failed to fetch users');
-
-    return res.json();
+    const query = params.toString();
+    return authFetch<UsersResponse>(
+        `/api/users${query ? `?${query}` : ''}`,
+        {},
+        signal,
+    );
 };

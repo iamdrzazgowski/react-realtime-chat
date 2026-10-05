@@ -13,6 +13,7 @@ import chatting from "@/assets/chatting.svg";
 import FormErrorLabel from "./ui/form-error";
 import type { SignUpFormValues } from "@/types/form";
 import { useRegisterUser } from "@/hooks/useAuth";
+import { Link } from "react-router";
 
 export function SignupForm({
     className,
@@ -42,7 +43,7 @@ export function SignupForm({
                 password,
                 confirmPassword,
             },
-            { onSettled: () => reset() },
+            { onError: () => reset() },
         );
     };
 
@@ -199,14 +200,17 @@ export function SignupForm({
                             </Field>
                             <FieldDescription className="text-center">
                                 Already have an account?{" "}
-                                <a href="/login">Sign in</a>
+                                <Link to="/login">Sign in</Link>
                             </FieldDescription>
                         </FieldGroup>
                     </form>
                     <div className="bg-[oklch(0.97_0_0)] relative hidden md:block">
                         <img
                             src={chatting}
-                            alt="Image"
+                            alt="Illustration of people chatting"
+                            loading="lazy"
+                            width={400}
+                            height={400}
                             className="absolute inset-0 h-full w-full object-contain object-center px-8"
                         />
                     </div>

@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { Button } from '@/components/ui/button';
 import {
     Popover,
@@ -82,13 +83,16 @@ interface EmojiPickerProps {
     onSelect: (emoji: string) => void;
 }
 
-export function EmojiPicker({ onSelect }: EmojiPickerProps) {
+function EmojiPickerInner({ onSelect }: EmojiPickerProps) {
     const [open, setOpen] = useState(false);
 
-    const handleSelect = (emoji: string) => {
-        onSelect(emoji);
-        setOpen(false);
-    };
+    const handleSelect = useCallback(
+        (emoji: string) => {
+            onSelect(emoji);
+            setOpen(false);
+        },
+        [onSelect],
+    );
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -126,3 +130,5 @@ export function EmojiPicker({ onSelect }: EmojiPickerProps) {
         </Popover>
     );
 }
+
+export const EmojiPicker = memo(EmojiPickerInner);
