@@ -327,13 +327,3 @@ erDiagram
 - **Backend** - any Node.js host with a PostgreSQL database. Run
   `npm run build`, apply migrations with `npx prisma migrate deploy`, then
   start with `npm start`. Set `FRONTEND_URL` to your deployed frontend origin.
-
----
-
-## Roadmap
-
-- [ ] Authenticate Socket.IO connections with the JWT
-- [ ] Unread message counters (based on `lastReadAt`)
-- [ ] Typing indicators over WebSockets
-- [ ] Automated tests
-- [ ] Docker Compose setup for the whole stack
