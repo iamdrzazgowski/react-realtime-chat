@@ -264,37 +264,66 @@ When a socket disconnects, the user is automatically marked as offline.
 
 ## Data Model
 
+The full schema is defined in [`server/prisma/schema.prisma`](server/prisma/schema.prisma).
+
 ```mermaid
 erDiagram
-    User ||--o{ ConversationMember : "joins"
+    User ||--o{ ConversationMember : "is member via"
     Conversation ||--o{ ConversationMember : "has"
     Conversation ||--o{ Message : "contains"
     User ||--o{ Message : "sends"
 
     User {
-        string id PK
+        string id PK "uuid"
         string email UK
         string firstName
         string lastName
-        string password
-        boolean isOnline
+        string password "bcrypt hash"
+        boolean isOnline "default false"
+        datetime createdAt "default now()"
+        datetime updatedAt "auto-updated"
     }
     Conversation {
-        string id PK
-        enum type "DIRECT | GROUP"
-        string name
+        string id PK "uuid"
+        ConversationType type "DIRECT or GROUP"
+        string name "nullable"
+        datetime createdAt "default now()"
+        datetime updatedAt "auto-updated"
     }
     ConversationMember {
-        string id PK
-        enum role "ADMIN | MEMBER"
-        datetime lastReadAt
+        string id PK "uuid"
+        string userId FK
+        string conversationId FK
+        ConversationRole role "default MEMBER"
+        datetime joinedAt "default now()"
+        datetime lastReadAt "nullable"
     }
     Message {
-        string id PK
+        string id PK "uuid"
         string content
-        datetime createdAt
+        string conversationId FK
+        string senderId FK
+        datetime createdAt "default now()"
     }
 ```
+
+### Enums
+
+| Enum               | Values              |
+| ------------------ | ------------------- |
+| `ConversationType` | `DIRECT`, `GROUP`   |
+| `ConversationRole` | `ADMIN`, `MEMBER`   |
+
+### Constraints and indexes
+
+| Model                | Constraint / index                                                        |
+| -------------------- | ------------------------------------------------------------------------- |
+| `User`               | `email` is unique and indexed                                             |
+| `Conversation`       | index on `type`                                                           |
+| `ConversationMember` | unique pair (`userId`, `conversationId`); indexes on both columns         |
+| `ConversationMember` | `ON DELETE CASCADE` when the user or the conversation is deleted          |
+| `Message`            | composite index on (`conversationId`, `createdAt`)                        |
+| `Message`            | `ON DELETE CASCADE` when the conversation is deleted (the sender FK has no cascade) |
 
 ---
 
